@@ -541,38 +541,7 @@
 
       // --- Event Handlers & Initialization ---
       document.addEventListener("DOMContentLoaded", () => {
-        document
-          .getElementById("start-game-btn")
-          .addEventListener("click", () => {
-            const selectedColor = document.querySelector(
-              'input[name="player-color"]:checked'
-            ).value;
-            startNewGame(selectedColor);
-            closeModal("modal-new-game");
-          });
-
-        document
-          .getElementById("submit-move")
-          .addEventListener("click", () =>
-            handleMove(document.getElementById("move-input").value)
-          );
-        document
-          .getElementById("move-input")
-          .addEventListener("keypress", (e) => {
-            if (e.key === "Enter")
-              handleMove(document.getElementById("move-input").value);
-          });
-
-        document.addEventListener("keydown", (event) => {
-          if (event.key === "Escape") {
-            document.querySelectorAll(".modal-hidden").forEach((modal) => {
-              if (!modal.classList.contains("modal-hidden"))
-                closeModal(modal.id);
-            });
-          }
-        });
-
-        // --- Modal Creation ---
+        // --- MODAL CREATION FIRST ---
         createModal(
           "modal-new-game",
           "Nouvelle Partie",
@@ -632,6 +601,41 @@
           resourcesContent,
           true
         );
+
+        // --- NOW ATTACH EVENT LISTENERS ---
+        document
+          .getElementById("start-game-btn")
+          .addEventListener("click", () => {
+            const selectedColor = document.querySelector(
+              'input[name="player-color"]:checked'
+            ).value;
+            startNewGame(selectedColor);
+            closeModal("modal-new-game");
+          });
+
+        document
+          .getElementById("submit-move")
+          .addEventListener("click", () =>
+            handleMove(document.getElementById("move-input").value)
+          );
+        document
+          .getElementById("move-input")
+          .addEventListener("keypress", (e) => {
+            if (e.key === "Enter")
+              handleMove(document.getElementById("move-input").value);
+          });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            // Close any open modal
+            const openModal = document.querySelector(
+              ".fixed.inset-0:not(.modal-hidden)"
+            );
+            if (openModal) {
+              closeModal(openModal.id);
+            }
+          }
+        });
 
         setupTabs();
       });
