@@ -237,8 +237,51 @@
       }
 
       function openModal(modalId) {
+        // Workflow logic to display summaries from previous steps
+        if (modalId === "modal-step2") {
+          const notes1 = document.getElementById("notes-step1").value;
+          const summaryContainer = document.getElementById(
+            "summary-step1-container"
+          );
+          if (notes1.trim() !== "") {
+            summaryContainer.innerHTML = `
+                        <div class="bg-slate-700/50 p-4 rounded-lg border border-slate-600 mb-6">
+                            <h4 class="font-bold text-red-400 mb-2">Résumé - Radar Tactique</h4>
+                            <p class="text-sm text-slate-300 whitespace-pre-wrap">${notes1}</p>
+                        </div>
+                    `;
+          } else {
+            summaryContainer.innerHTML = "";
+          }
+        } else if (modalId === "modal-step3") {
+          const notes1 = document.getElementById("notes-step1").value;
+          const notes2 = document.getElementById("notes-step2").value;
+          const summaryContainer = document.getElementById(
+            "summary-step2-container"
+          );
+          let summaryHTML = "";
+          if (notes1.trim() !== "") {
+            summaryHTML += `
+                        <div class="bg-slate-700/50 p-4 rounded-lg border border-slate-600 mb-4">
+                            <h4 class="font-bold text-red-400 mb-2">Résumé - Radar Tactique</h4>
+                            <p class="text-sm text-slate-300 whitespace-pre-wrap">${notes1}</p>
+                        </div>
+                    `;
+          }
+          if (notes2.trim() !== "") {
+            summaryHTML += `
+                        <div class="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                            <h4 class="font-bold text-amber-400 mb-2">Résumé - Évaluation Stratégique</h4>
+                            <p class="text-sm text-slate-300 whitespace-pre-wrap">${notes2}</p>
+                        </div>
+                    `;
+          }
+          summaryContainer.innerHTML = summaryHTML;
+        }
+
         document.getElementById(modalId)?.classList.remove("modal-hidden");
       }
+
       function closeModal(modalId) {
         document.getElementById(modalId)?.classList.add("modal-hidden");
       }
@@ -288,7 +331,7 @@
                     <h4 class="font-bold text-cyan-400 mb-2">Le Conseil du Coach</h4>
                     <p class="text-sm text-slate-400">"Votre temps de réflexion devrait être investi à 80% sur les intentions de votre adversaire. La plupart des parties sont perdues, pas gagnées. Évitez de perdre avant de chercher à gagner."</p>
                 </div>
-                 <textarea placeholder="Mes notes sur les menaces adverses..." class="w-full h-24 mt-4 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                 <textarea id="notes-step1" placeholder="Mes notes sur les menaces adverses..." class="w-full h-24 mt-4 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
             `
         );
 
@@ -297,6 +340,7 @@
           "ÉTAPE 2 : L'Évaluation Stratégique",
           "text-amber-400",
           `
+                <div id="summary-step1-container"></div>
                 <ul class="space-y-4 text-slate-300 mb-6">
                     <li><strong>Sécurité des Rois :</strong> Lequel des deux rois est le plus vulnérable ? Y a-t-il des courants d'air ?</li>
                     <li><strong>Structure de Pions :</strong> Qui contrôle le centre ? Y a-t-il des faiblesses (pions isolés, doublés) à attaquer ?</li>
@@ -306,7 +350,7 @@
                     <h4 class="font-bold text-cyan-400 mb-2">Le Conseil du Coach</h4>
                     <p class="text-sm text-slate-400">"N'évaluez pas la position en vous demandant 'qui est mieux ?'. Demandez-vous 'quel est le problème à résoudre dans cette position ?'. La réponse sera votre plan."</p>
                 </div>
-                 <textarea placeholder="Mes notes sur la stratégie et la structure..." class="w-full h-24 mt-4 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                 <textarea id="notes-step2" placeholder="Mes notes sur la stratégie et la structure..." class="w-full h-24 mt-4 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
             `
         );
 
@@ -315,6 +359,7 @@
           "ÉTAPE 3 : La Synthèse et l'Action",
           "text-green-400",
           `
+                 <div id="summary-step2-container" class="mb-6"></div>
                  <div class="mb-6">
                     <label class="font-semibold text-slate-300">Mon objectif pour ce coup :</label>
                     <input type="text" placeholder="Ex: Améliorer mon fou, défendre e5, attaquer f7..." class="w-full mt-2 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500">
