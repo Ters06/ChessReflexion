@@ -32,6 +32,32 @@
         opacity: 0;
         transform: translateY(-20px) scale(0.95);
       }
+      .tab-button {
+        padding: 0.75rem 1.5rem;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+      }
+      .tab-button.active {
+        border-bottom-color: #22d3ee; /* cyan-400 */
+        color: #e2e8f0; /* slate-200 */
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
     </style>
   </head>
   <body class="bg-slate-900 text-white antialiased overflow-x-hidden">
@@ -177,7 +203,7 @@
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
           </svg>
-          Ressources Utiles
+          Bibliothèque de Ressources
         </button>
       </footer>
     </div>
@@ -188,14 +214,20 @@
     </div>
 
     <script>
-      function createModal(id, title, color, content) {
+      function createModal(id, title, color, content, isResourceModal = false) {
         const modalHTML = `
                 <div id="${id}" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-hidden">
                     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm modal-overlay" onclick="closeModal('${id}')"></div>
-                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700 shadow-2xl w-full max-w-2xl relative modal-content">
-                        <h3 class="text-2xl font-bold ${color} mb-6">${title}</h3>
+                    <div class="bg-slate-800 rounded-xl ${
+                      isResourceModal ? "p-0" : "p-8"
+                    } border border-slate-700 shadow-2xl w-full max-w-2xl relative modal-content">
+                        ${
+                          isResourceModal
+                            ? ""
+                            : `<h3 class="text-2xl font-bold ${color} mb-6">${title}</h3>`
+                        }
                         ${content}
-                        <button onclick="closeModal('${id}')" class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors text-3xl font-bold">&times;</button>
+                        <button onclick="closeModal('${id}')" class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors text-3xl font-bold z-20">&times;</button>
                     </div>
                 </div>
             `;
@@ -209,6 +241,27 @@
       }
       function closeModal(modalId) {
         document.getElementById(modalId)?.classList.add("modal-hidden");
+      }
+
+      function setupTabs() {
+        const tabButtons = document.querySelectorAll(".tab-button");
+        const tabPanels = document.querySelectorAll(".tab-panel");
+
+        tabButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            tabButtons.forEach((btn) => btn.classList.remove("active"));
+            button.classList.add("active");
+
+            const targetPanelId = button.getAttribute("data-target");
+            tabPanels.forEach((panel) => {
+              if (panel.id === targetPanelId) {
+                panel.classList.add("active");
+              } else {
+                panel.classList.remove("active");
+              }
+            });
+          });
+        });
       }
 
       document.addEventListener("keydown", (event) => {
@@ -285,44 +338,66 @@
             `
         );
 
+        const resourcesContent = `
+                <div class="sticky top-0 bg-slate-800/80 backdrop-blur-sm z-10">
+                    <h3 class="text-2xl font-bold text-cyan-400 p-8 pb-0">Bibliothèque de Ressources</h3>
+                    <div class="px-8 border-b border-slate-700 text-sm font-medium text-slate-400">
+                        <div class="flex -mb-px">
+                            <button data-target="panel-tactics" class="tab-button active">Tactique</button>
+                            <button data-target="panel-strategy" class="tab-button">Stratégie</button>
+                            <button data-target="panel-endgames" class="tab-button">Finales</button>
+                            <button data-target="panel-openings" class="tab-button">Ouvertures</button>
+                            <button data-target="panel-youtube" class="tab-button">YouTube</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <div id="panel-tactics" class="tab-panel active">
+                        <ul class="space-y-4">
+                            <li><a href="https://lichess.org/training" target="_blank" class="font-semibold hover:text-cyan-400">Lichess Puzzles</a><p class="text-sm text-slate-400">Le meilleur pour un entraînement quotidien, gratuit et illimité.</p></li>
+                            <li><a href="https://www.chesstempo.com" target="_blank" class="font-semibold hover:text-cyan-400">Chess Tempo</a><p class="text-sm text-slate-400">Idéal pour un entraînement ciblé sur des thèmes spécifiques ou des finales.</p></li>
+                             <li><a href="https://www.chesspuzzle.net" target="_blank" class="font-semibold hover:text-cyan-400">ChessPuzzle.net</a><p class="text-sm text-slate-400">Excellent pour travailler des motifs tactiques très spécifiques (ex: Mat à l'étouffée).</p></li>
+                        </ul>
+                    </div>
+                    <div id="panel-strategy" class="tab-panel">
+                         <ul class="space-y-4">
+                            <li><strong class="text-slate-200">Livre : "Comment Mûrir son Style" - J. Silman</strong><p class="text-sm text-slate-400">La bible pour comprendre les déséquilibres et le jeu positionnel.</p></li>
+                            <li><strong class="text-slate-200">Livre : "Pensez comme un grand maître" - A. Kotov</strong><p class="text-sm text-slate-400">Un classique pour apprendre à structurer son calcul et sa recherche de coups candidats.</p></li>
+                            <li><a href="https://www.chessgames.com" target="_blank" class="font-semibold hover:text-cyan-400">Chessgames.com</a><p class="text-sm text-slate-400">Une base de données historique pour explorer les parties des grands maîtres par joueur ou par ouverture.</p></li>
+                        </ul>
+                    </div>
+                    <div id="panel-endgames" class="tab-panel">
+                         <ul class="space-y-4">
+                            <li><a href="https://lichess.org/practice" target="_blank" class="font-semibold hover:text-cyan-400">Pratique des Finales Lichess</a><p class="text-sm text-slate-400">Le meilleur moyen d'apprendre par la pratique interactive des finales de base.</p></li>
+                            <li><strong class="text-slate-200">Livre : "Les 100 finales qu'il faut connaître" - J. de la Villa</strong><p class="text-sm text-slate-400">Le livre essentiel pour mémoriser les positions théoriques clés.</p></li>
+                            <li><strong class="text-slate-200">Livre : "La Maîtrise des Finales" - M. Dvoretsky</strong><p class="text-sm text-slate-400">Pour les joueurs très ambitieux. Une référence absolue mais très exigeante.</p></li>
+                        </ul>
+                    </div>
+                    <div id="panel-openings" class="tab-panel">
+                        <ul class="space-y-4">
+                            <li><a href="https://lichess.org/analysis" target="_blank" class="font-semibold hover:text-cyan-400">Échiquier d'analyse Lichess</a><p class="text-sm text-slate-400">L'explorateur de base de données (Maîtres + Lichess) est un outil indispensable.</p></li>
+                            <li><a href="https://www.chessable.com" target="_blank" class="font-semibold hover:text-cyan-400">Chessable</a><p class="text-sm text-slate-400">La meilleure plateforme pour apprendre et mémoriser un répertoire via la répétition espacée.</p></li>
+                        </ul>
+                    </div>
+                     <div id="panel-youtube" class="tab-panel">
+                         <ul class="space-y-4">
+                            <li><a href="https://www.youtube.com/@Blitzstream" target="_blank" class="font-semibold hover:text-cyan-400">Blitzstream (FR)</a><p class="text-sm text-slate-400">La référence francophone par Kévin Bordi, pour suivre l'actualité et apprendre de manière divertissante.</p></li>
+                            <li><a href="https://www.youtube.com/@DanielNaroditsky" target="_blank" class="font-semibold hover:text-cyan-400">Daniel Naroditsky (EN)</a><p class="text-sm text-slate-400">Probablement le meilleur contenu pédagogique gratuit sur YouTube. Ses "Speedruns" sont des mines d'or.</p></li>
+                            <li><a href="https://www.youtube.com/@STLChessClub" target="_blank" class="font-semibold hover:text-cyan-400">Saint Louis Chess Club (EN)</a><p class="text-sm text-slate-400">Des conférences de très haut niveau par des GMs de renommée mondiale comme Yasser Seirawan.</p></li>
+                        </ul>
+                    </div>
+                </div>
+            `;
         createModal(
           "modal-resources",
-          "Ressources Utiles",
+          "Bibliothèque de Ressources",
           "text-cyan-400",
-          `
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-slate-300">
-                <div>
-                    <h4 class="font-semibold mb-2">Entraînement Tactique</h4>
-                    <ul class="space-y-2">
-                        <li><a href="https://lichess.org/training" target="_blank" class="hover:text-cyan-400">Lichess Puzzles</a> - Illimité et gratuit.</li>
-                        <li><a href="https://www.chesstempo.com" target="_blank" class="hover:text-cyan-400">Chess Tempo</a> - Pour un entraînement plus ciblé.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-2">Apprentissage des Ouvertures</h4>
-                    <ul class="space-y-2">
-                        <li><a href="https://lichess.org/analysis" target="_blank" class="hover:text-cyan-400">Échiquier d'analyse Lichess</a></li>
-                        <li><a href="https://www.chessable.com" target="_blank" class="hover:text-cyan-400">Chessable</a> - Apprentissage par répétition espacée.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-2">Livres de Référence</h4>
-                    <ul class="space-y-2">
-                        <li>"Pensez comme un grand maître" - A. Kotov</li>
-                        <li>"Comment Mûrir son Style" - J. Silman</li>
-                        <li>"Les 100 finales qu'il faut connaître" - J. de la Villa</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-2">Stratégie & Analyse</h4>
-                     <ul class="space-y-2">
-                        <li><a href="https://www.youtube.com/@Blitzstream" target="_blank" class="hover:text-cyan-400">Blitzstream (FR)</a> - Kévin Bordi</li>
-                        <li><a href="https://www.youtube.com/@dechecs" target="_blank" class="hover:text-cyan-400">Apprendre les échecs (FR)</a></li>
-                    </ul>
-                </div>
-            </div>
-            `
+          resourcesContent,
+          true
         );
+
+        // This needs to be called AFTER the modal is created
+        setupTabs();
       });
     </script>
   </body>
