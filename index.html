@@ -19,6 +19,8 @@
       }
       .modal-content {
         transition: transform 0.3s ease, opacity 0.3s ease;
+        max-height: 90vh; /* Empêche la modale d'être plus haute que l'écran */
+        overflow-y: auto; /* Ajoute une barre de défilement si le contenu dépasse */
       }
       .modal-hidden {
         pointer-events: none;
