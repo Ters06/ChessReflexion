@@ -17,6 +17,13 @@
       body {
         font-family: "Inter", sans-serif;
       }
+      .main-view {
+        display: none;
+      } /* Hide all views by default */
+      #home-view {
+        display: flex;
+      } /* Show home view initially */
+
       .modal-overlay {
         transition: opacity 0.3s ease;
       }
@@ -35,9 +42,6 @@
         opacity: 0;
         transform: translateY(-20px) scale(0.95);
       }
-      #game-view {
-        display: none;
-      } /* Initially hide the game view */
 
       /* Static board styling */
       .static-board {
@@ -103,7 +107,7 @@
     <!-- HOME VIEW -->
     <div
       id="home-view"
-      class="min-h-screen flex flex-col items-center justify-center p-4">
+      class="main-view min-h-screen flex-col items-center justify-center p-4">
       <div
         class="absolute inset-0 bg-grid-slate-700/20 [mask-image:linear-gradient(to_bottom,white_20%,transparent_100%)]"></div>
       <header class="text-center mb-12 z-10">
@@ -117,7 +121,7 @@
       </header>
       <div class="z-10 flex flex-col sm:flex-row gap-6">
         <button
-          id="simple-dojo-btn"
+          onclick="showView('simple-dojo-view')"
           class="bg-slate-800/50 backdrop-blur-sm rounded-xl p-8 border border-slate-700 text-center hover:border-cyan-500/50 transition-colors duration-300 transform hover:-translate-y-1">
           <h2 class="text-2xl font-bold text-cyan-400">Dojo Simple</h2>
           <p class="text-slate-400 mt-2">
@@ -135,10 +139,92 @@
       </div>
     </div>
 
+    <!-- SIMPLE DOJO VIEW -->
+    <div
+      id="simple-dojo-view"
+      class="main-view min-h-screen flex-col items-center justify-center p-4">
+      <header class="text-center mb-12 z-10">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-cyan-400">
+          Dojo Simple
+        </h1>
+        <p class="text-slate-400 mt-4 max-w-2xl mx-auto">
+          Entraînez votre processus de réflexion sur n'importe quelle position.
+        </p>
+      </header>
+      <div class="w-full max-w-md z-10 space-y-4">
+        <button
+          onclick="openModal('modal-step1')"
+          class="w-full bg-red-500/20 text-red-300 font-semibold py-4 px-4 rounded-lg hover:bg-red-500/40 transition text-left flex items-center text-lg">
+          <span
+            class="bg-red-500 text-white rounded-full h-8 w-8 flex items-center justify-center mr-4"
+            >1</span
+          >
+          Radar Tactique
+        </button>
+        <button
+          onclick="openModal('modal-step2')"
+          class="w-full bg-amber-500/20 text-amber-300 font-semibold py-4 px-4 rounded-lg hover:bg-amber-500/40 transition text-left flex items-center text-lg">
+          <span
+            class="bg-amber-500 text-white rounded-full h-8 w-8 flex items-center justify-center mr-4"
+            >2</span
+          >
+          Évaluation Stratégique
+        </button>
+        <button
+          onclick="openModal('modal-step3')"
+          class="w-full bg-green-500/20 text-green-300 font-semibold py-4 px-4 rounded-lg hover:bg-green-500/40 transition text-left flex items-center text-lg">
+          <span
+            class="bg-green-500 text-white rounded-full h-8 w-8 flex items-center justify-center mr-4"
+            >3</span
+          >
+          Synthèse & Action
+        </button>
+      </div>
+      <footer class="mt-12 text-center z-10 flex flex-col sm:flex-row gap-4">
+        <button
+          onclick="openModal('modal-resources')"
+          class="bg-slate-700 text-slate-300 font-semibold py-2 px-6 rounded-lg hover:bg-slate-600 transition-colors duration-300 flex items-center mx-auto">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="mr-2">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+          Ressources
+        </button>
+        <button
+          onclick="showView('home-view')"
+          class="text-slate-400 font-semibold py-2 px-6 rounded-lg hover:bg-slate-800 transition-colors duration-300 flex items-center mx-auto">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="mr-2">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Retour à l'accueil
+        </button>
+      </footer>
+    </div>
+
     <!-- GAME VIEW -->
     <div
       id="game-view"
-      class="w-full min-h-screen p-4 md:p-8 flex flex-col lg:flex-row gap-8">
+      class="main-view w-full min-h-screen p-4 md:p-8 flex-col lg:flex-row gap-8">
       <!-- Left Column: Board and Info -->
       <div class="w-full lg:w-2/3 flex-shrink-0">
         <div
@@ -187,7 +273,6 @@
           </button>
         </div>
 
-        <!-- Move Input Section -->
         <div id="move-input-area">
           <div id="move-constructor" class="mb-4">
             <label
@@ -200,9 +285,7 @@
               id="move-selector"
               class="flex flex-wrap gap-2 min-h-[44px]"></div>
           </div>
-
           <div class="text-center text-slate-500 my-2 text-sm">ou</div>
-
           <div id="text-input-section" class="mb-4">
             <div class="flex gap-2">
               <input
@@ -234,7 +317,7 @@
             Exporter
           </button>
           <button
-            onclick="window.location.reload()"
+            onclick="showView('home-view')"
             class="bg-red-900/50 text-red-300 font-semibold py-2 px-4 rounded-lg hover:bg-red-900/80 transition">
             Quitter
           </button>
@@ -263,6 +346,21 @@
         Q: "♕",
         K: "♔",
       };
+      const allViews = document.querySelectorAll(".main-view");
+
+      // --- Navigation ---
+      function showView(viewId) {
+        allViews.forEach((view) => {
+          view.style.display = "none";
+        });
+        const viewToShow = document.getElementById(viewId);
+        if (viewToShow) {
+          viewToShow.style.display = "flex";
+        }
+        if (viewId === "home-view") {
+          game.reset(); // Reset game logic when returning home
+        }
+      }
 
       // --- Modal & UI Functions ---
       function createModal(id, title, color, content, isResourceModal = false) {
@@ -341,17 +439,19 @@
       function updateStatus() {
         var status = "";
         var moveColor = game.turn() === "b" ? "Noirs" : "Blancs";
+        const moveInputArea = document.getElementById("move-input-area");
         if (game.in_checkmate()) {
           status = "FIN DE PARTIE, Échec et mat.";
-          document.getElementById("move-input-area").style.display = "none";
+          moveInputArea.style.display = "none";
         } else if (game.in_draw()) {
           status = "FIN DE PARTIE, Nulle.";
-          document.getElementById("move-input-area").style.display = "none";
+          moveInputArea.style.display = "none";
         } else {
           status = "Trait aux " + moveColor;
           if (game.in_check()) {
             status += ", en échec.";
           }
+          moveInputArea.style.display = "block";
         }
         document.getElementById("game-status").innerHTML = status;
         document.getElementById("pgn").innerHTML = game.pgn({
@@ -363,7 +463,6 @@
 
       function handleMove(move) {
         if (game.move(move, { sloppy: true })) {
-          // sloppy allows SAN like Nf3 instead of Ng1-f3
           renderBoard();
           updateStatus();
           document.getElementById("move-input").value = "";
@@ -391,17 +490,14 @@
           ? "grid"
           : "none";
         moveConstructor.style.display = isPlayerTurn ? "block" : "none";
+
+        const isGameOver = game.game_over();
+        textInputSection.style.display = isGameOver ? "none" : "block";
         moveInputLabel.textContent = isPlayerTurn
           ? "Votre coup :"
           : "Coup de l'adversaire :";
 
-        if (!isPlayerTurn && game.game_over()) {
-          textInputSection.style.display = "none";
-        } else {
-          textInputSection.style.display = "block";
-        }
-
-        if (!isPlayerTurn) return;
+        if (!isPlayerTurn || isGameOver) return;
 
         const legalMoves = game.moves({ verbose: true });
         const pieceTypes = [...new Set(legalMoves.map((move) => move.piece))];
@@ -438,20 +534,13 @@
       function startNewGame(color) {
         playerColor = color;
         game.reset();
-        document.getElementById("home-view").style.display = "none";
-        document.getElementById("game-view").style.display = "flex";
+        showView("game-view");
         renderBoard();
         updateStatus();
       }
 
       // --- Event Handlers & Initialization ---
       document.addEventListener("DOMContentLoaded", () => {
-        document
-          .getElementById("simple-dojo-btn")
-          .addEventListener("click", () => {
-            openModal("modal-resources");
-          });
-
         document
           .getElementById("start-game-btn")
           .addEventListener("click", () => {
@@ -476,7 +565,7 @@
 
         document.addEventListener("keydown", (event) => {
           if (event.key === "Escape") {
-            document.querySelectorAll(".fixed.inset-0").forEach((modal) => {
+            document.querySelectorAll(".modal-hidden").forEach((modal) => {
               if (!modal.classList.contains("modal-hidden"))
                 closeModal(modal.id);
             });
@@ -493,13 +582,11 @@
                 <div class="flex justify-center gap-8 mb-8">
                     <label class="flex flex-col items-center gap-2 cursor-pointer p-4 border-2 border-transparent rounded-lg has-[:checked]:border-violet-500">
                         <input type="radio" name="player-color" value="w" class="sr-only" checked>
-                        <div class="text-6xl">♔</div>
-                        <span class="font-semibold text-slate-200">Blancs</span>
+                        <div class="text-6xl">♔</div><span class="font-semibold text-slate-200">Blancs</span>
                     </label>
                     <label class="flex flex-col items-center gap-2 cursor-pointer p-4 border-2 border-transparent rounded-lg has-[:checked]:border-violet-500">
                         <input type="radio" name="player-color" value="b" class="sr-only">
-                        <div class="text-6xl">♚</div>
-                        <span class="font-semibold text-slate-200">Noirs</span>
+                        <div class="text-6xl">♚</div><span class="font-semibold text-slate-200">Noirs</span>
                     </label>
                 </div>
                 <button id="start-game-btn" class="w-full bg-violet-500 text-white font-bold py-3 rounded-lg hover:bg-violet-600 transition">Commencer la partie</button>
@@ -511,14 +598,8 @@
           "Exporter la Partie",
           "text-cyan-400",
           `
-                <div class="mb-6">
-                    <label class="font-semibold text-slate-300">PGN (Partie Complète)</label>
-                    <textarea id="export-pgn" readonly class="w-full h-32 mt-2 bg-slate-900/50 border border-slate-600 rounded-lg p-2 font-mono text-sm"></textarea>
-                </div>
-                <div>
-                    <label class="font-semibold text-slate-300">FEN (Position Actuelle)</label>
-                    <input id="export-fen" readonly type="text" class="w-full mt-2 bg-slate-900/50 border border-slate-600 rounded-lg p-2 font-mono text-sm">
-                </div>
+                <div class="mb-6"><label class="font-semibold text-slate-300">PGN (Partie Complète)</label><textarea id="export-pgn" readonly class="w-full h-32 mt-2 bg-slate-900/50 border border-slate-600 rounded-lg p-2 font-mono text-sm"></textarea></div>
+                <div><label class="font-semibold text-slate-300">FEN (Position Actuelle)</label><input id="export-fen" readonly type="text" class="w-full mt-2 bg-slate-900/50 border border-slate-600 rounded-lg p-2 font-mono text-sm"></div>
             `
         );
 
@@ -526,42 +607,21 @@
           "modal-step1",
           "ÉTAPE 1 : Le Radar Tactique",
           "text-red-400",
-          `
-                <ul class="space-y-4 text-slate-300 mb-6">
-                    <li><strong>Son Dernier Coup :</strong> Quelle est son intention ? (Attaque, défense, préparation)</li>
-                    <li><strong>Scan des Menaces Forcées :</strong> Listez tous les <strong>Échecs</strong>, <strong>Captures</strong>, et <strong>Menaces</strong> directes possibles (pour vous et pour lui).</li>
-                    <li><strong>Son Plan :</strong> Où ses pièces convergent-elles ? Quel est son objectif à long terme ?</li>
-                </ul>
-                <div class="bg-slate-700/50 p-4 rounded-lg"><h4 class="font-bold text-cyan-400 mb-2">Le Conseil du Coach</h4><p class="text-sm text-slate-400">"Évitez de perdre avant de chercher à gagner."</p></div>
-                 <textarea placeholder="Mes notes sur les menaces adverses..." class="w-full h-24 mt-4 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
-            `
+          `<ul class="space-y-4 text-slate-300 mb-6"><li><strong>Son Dernier Coup :</strong> Quelle est son intention ? (Attaque, défense, préparation)</li><li><strong>Scan des Menaces Forcées :</strong> Listez tous les <strong>Échecs</strong>, <strong>Captures</strong>, et <strong>Menaces</strong> directes possibles (pour vous et pour lui).</li><li><strong>Son Plan :</strong> Où ses pièces convergent-elles ? Quel est son objectif à long terme ?</li></ul><div class="bg-slate-700/50 p-4 rounded-lg"><h4 class="font-bold text-cyan-400 mb-2">Le Conseil du Coach</h4><p class="text-sm text-slate-400">"Votre temps de réflexion devrait être investi à 80% sur les intentions de votre adversaire. La plupart des parties sont perdues, pas gagnées. Évitez de perdre avant de chercher à gagner."</p></div><textarea placeholder="Mes notes sur les menaces adverses..." class="w-full h-24 mt-4 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>`
         );
 
         createModal(
           "modal-step2",
           "ÉTAPE 2 : L'Évaluation Stratégique",
           "text-amber-400",
-          `
-                <ul class="space-y-4 text-slate-300 mb-6">
-                    <li><strong>Sécurité des Rois :</strong> Lequel des deux rois est le plus vulnérable ? Y a-t-il des courants d'air ?</li>
-                    <li><strong>Structure de Pions :</strong> Qui contrôle le centre ? Y a-t-il des faiblesses (pions isolés, doublés) à attaquer ?</li>
-                    <li><strong>Activité des Pièces :</strong> Identifiez votre <strong>pire pièce</strong> et sa <strong>meilleure pièce</strong>. C'est la clé de votre plan.</li>
-                </ul>
-                <div class="bg-slate-700/50 p-4 rounded-lg"><h4 class="font-bold text-cyan-400 mb-2">Le Conseil du Coach</h4><p class="text-sm text-slate-400">"Demandez-vous 'quel est le problème à résoudre dans cette position ?'. La réponse sera votre plan."</p></div>
-                 <textarea placeholder="Mes notes sur la stratégie..." class="w-full h-24 mt-4 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
-            `
+          `<ul class="space-y-4 text-slate-300 mb-6"><li><strong>Sécurité des Rois :</strong> Lequel des deux rois est le plus vulnérable ? Y a-t-il des courants d'air ?</li><li><strong>Structure de Pions :</strong> Qui contrôle le centre ? Y a-t-il des faiblesses (pions isolés, doublés) à attaquer ?</li><li><strong>Activité des Pièces :</strong> Identifiez votre <strong>pire pièce</strong> et sa <strong>meilleure pièce</strong>. C'est la clé de votre plan.</li></ul><div class="bg-slate-700/50 p-4 rounded-lg"><h4 class="font-bold text-cyan-400 mb-2">Le Conseil du Coach</h4><p class="text-sm text-slate-400">"N'évaluez pas la position en vous demandant 'qui est mieux ?'. Demandez-vous 'quel est le problème à résoudre dans cette position ?'. La réponse sera votre plan."</p></div><textarea placeholder="Mes notes sur la stratégie et la structure..." class="w-full h-24 mt-4 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>`
         );
 
         createModal(
           "modal-step3",
           "ÉTAPE 3 : La Synthèse et l'Action",
           "text-green-400",
-          `
-                 <div class="mb-6"><label class="font-semibold text-slate-300">Mon objectif pour ce coup :</label><input type="text" placeholder="Ex: Améliorer mon fou, défendre e5..." class="w-full mt-2 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500"></div>
-                <div class="mb-6"><label class="font-semibold text-slate-300">Mes 3 coups candidats :</label><div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2"><input type="text" placeholder="Coup 1" class="bg-slate-700/50 border border-slate-600 rounded-lg p-2 text-center"><input type="text" placeholder="Coup 2" class="bg-slate-700/50 border border-slate-600 rounded-lg p-2 text-center"><input type="text" placeholder="Coup 3" class="bg-slate-700/50 border border-slate-600 rounded-lg p-2 text-center"></div></div>
-                <div class="bg-slate-700/50 p-4 rounded-lg"><h4 class="font-bold text-cyan-400 mb-2">Le Conseil du Coach</h4><p class="text-sm text-slate-400">"Le calcul discipliné de 2 ou 3 options vous sauvera d'innombrables erreurs."</p></div>
-                <div class="mt-6 p-4 border-2 border-dashed border-violet-500 rounded-lg"><h4 class="font-bold text-violet-400 text-center">VÉRIFICATION FINALE ANTI-GAFFE</h4><p class="text-center text-slate-400 mt-1">Après le coup que j'ai choisi, est-ce qu'une de mes pièces est en prise ?</p></div>
-            `
+          `<div class="mb-6"><label class="font-semibold text-slate-300">Mon objectif pour ce coup :</label><input type="text" placeholder="Ex: Améliorer mon fou, défendre e5, attaquer f7..." class="w-full mt-2 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500"></div><div class="mb-6"><label class="font-semibold text-slate-300">Mes 3 coups candidats :</label><div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2"><input type="text" placeholder="Coup 1" class="bg-slate-700/50 border border-slate-600 rounded-lg p-2 text-center"><input type="text" placeholder="Coup 2" class="bg-slate-700/50 border border-slate-600 rounded-lg p-2 text-center"><input type="text" placeholder="Coup 3" class="bg-slate-700/50 border border-slate-600 rounded-lg p-2 text-center"></div></div><div class="bg-slate-700/50 p-4 rounded-lg"><h4 class="font-bold text-cyan-400 mb-2">Le Conseil du Coach</h4><p class="text-sm text-slate-400">"Ne tombez pas amoureux de votre premier coup candidat. Le calcul discipliné de 2 ou 3 options, même rapidement, vous sauvera d'innombrables erreurs."</p></div><div class="mt-6 p-4 border-2 border-dashed border-violet-500 rounded-lg"><h4 class="font-bold text-violet-400 text-center">VÉRIFICATION FINALE ANTI-GAFFE</h4><p class="text-center text-slate-400 mt-1">Après le coup que j'ai choisi, est-ce qu'une de mes pièces est en prise ?</p></div>`
         );
 
         const resourcesContent = `<div class="sticky top-0 bg-slate-800/80 backdrop-blur-sm z-10"><h3 class="text-2xl font-bold text-cyan-400 p-8 pb-0">Bibliothèque de Ressources</h3><div class="px-8 border-b border-slate-700 text-sm font-medium text-slate-400"><div class="flex -mb-px"><button data-target="panel-tactics" class="tab-button active">Tactique</button><button data-target="panel-strategy" class="tab-button">Stratégie</button><button data-target="panel-endgames" class="tab-button">Finales</button><button data-target="panel-openings" class="tab-button">Ouvertures</button><button data-target="panel-youtube" class="tab-button">YouTube</button></div></div></div><div class="p-8"><div id="panel-tactics" class="tab-panel active"><ul class="space-y-4"><li><a href="https://lichess.org/training" target="_blank" class="font-semibold hover:text-cyan-400">Lichess Puzzles</a><p class="text-sm text-slate-400">Le meilleur pour un entraînement quotidien, gratuit et illimité.</p></li><li><a href="https://www.chesstempo.com" target="_blank" class="font-semibold hover:text-cyan-400">Chess Tempo</a><p class="text-sm text-slate-400">Idéal pour un entraînement ciblé sur des thèmes spécifiques.</p></li></ul></div><div id="panel-strategy" class="tab-panel"><ul class="space-y-4"><li><strong class="text-slate-200">Livre : "Comment Mûrir son Style" - J. Silman</strong><p class="text-sm text-slate-400">La bible pour comprendre les déséquilibres et le jeu positionnel.</p></li></ul></div><div id="panel-endgames" class="tab-panel"><ul class="space-y-4"><li><a href="https://lichess.org/practice" target="_blank" class="font-semibold hover:text-cyan-400">Pratique des Finales Lichess</a><p class="text-sm text-slate-400">Le meilleur moyen d'apprendre par la pratique interactive.</p></li></ul></div><div id="panel-openings" class="tab-panel"><ul class="space-y-4"><li><a href="https://www.chessable.com" target="_blank" class="font-semibold hover:text-cyan-400">Chessable</a><p class="text-sm text-slate-400">La meilleure plateforme pour apprendre un répertoire via la répétition espacée.</p></li></ul></div><div id="panel-youtube" class="tab-panel"><ul class="space-y-4"><li><a href="https://www.youtube.com/@Blitzstream" target="_blank" class="font-semibold hover:text-cyan-400">Blitzstream (FR)</a><p class="text-sm text-slate-400">La référence francophone par Kévin Bordi.</p></li><li><a href="https://www.youtube.com/@DanielNaroditsky" target="_blank" class="font-semibold hover:text-cyan-400">Daniel Naroditsky (EN)</a><p class="text-sm text-slate-400">Probablement le meilleur contenu pédagogique gratuit sur YouTube.</p></li></ul></div></div>`;
