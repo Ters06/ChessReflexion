@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dojo Mental Échiquéen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet" />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .modal-overlay {
+        transition: opacity 0.3s ease;
+      }
+      .modal-content {
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+      .modal-hidden {
+        pointer-events: none;
+      }
+      .modal-hidden .modal-overlay {
+        opacity: 0;
+      }
+      .modal-hidden .modal-content {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+      }
+    </style>
+  </head>
+  <body class="bg-slate-900 text-white antialiased overflow-x-hidden">
+    <div
+      class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 relative">
+      <div
+        class="absolute inset-0 bg-grid-slate-700/20 [mask-image:linear-gradient(to_bottom,white_20%,transparent_100%)]"></div>
+
+      <header class="text-center mb-12 z-10">
+        <h1
+          class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">
+          Dojo Mental
+        </h1>
+        <p class="text-slate-400 mt-4 max-w-2xl mx-auto">
+          Un outil pour structurer votre pensée, pas pour analyser à votre
+          place.<br />Utilisez-le **avant** de consulter le moteur d'analyse.
+        </p>
+      </header>
+
+      <main
+        class="w-full max-w-5xl z-10 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <!-- CARTE 1: Le Radar Tactique -->
+        <div
+          class="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 text-center flex flex-col hover:border-red-500/50 transition-colors duration-300 transform hover:-translate-y-1">
+          <div class="mx-auto bg-red-500/10 p-3 rounded-full mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-red-400">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </div>
+          <h2 class="text-xl font-bold text-red-400">
+            ÉTAPE 1 : Radar Tactique
+          </h2>
+          <p class="text-sm text-slate-400 mt-2 flex-grow">
+            Que veut mon adversaire ?
+          </p>
+          <button
+            onclick="openModal('modal-step1')"
+            class="mt-6 w-full bg-red-500/20 text-red-300 font-semibold py-2 px-4 rounded-lg hover:bg-red-500/40 transition">
+            Commencer l'Analyse
+          </button>
+        </div>
+
+        <!-- CARTE 2: L'Évaluation Stratégique -->
+        <div
+          class="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 text-center flex flex-col hover:border-amber-500/50 transition-colors duration-300 transform hover:-translate-y-1">
+          <div class="mx-auto bg-amber-500/10 p-3 rounded-full mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-amber-400">
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M7 3v18" />
+              <path d="M12 3v18" />
+              <path d="M17 3v18" />
+              <path d="M3 7h18" />
+              <path d="M3 12h18" />
+              <path d="M3 17h18" />
+            </svg>
+          </div>
+          <h2 class="text-xl font-bold text-amber-400">
+            ÉTAPE 2 : Évaluation Stratégique
+          </h2>
+          <p class="text-sm text-slate-400 mt-2 flex-grow">
+            Quelle est l'histoire de la position ?
+          </p>
+          <button
+            onclick="openModal('modal-step2')"
+            class="mt-6 w-full bg-amber-500/20 text-amber-300 font-semibold py-2 px-4 rounded-lg hover:bg-amber-500/40 transition">
+            Évaluer la Position
+          </button>
+        </div>
+
+        <!-- CARTE 3: La Synthèse et l'Action -->
+        <div
+          class="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 text-center flex flex-col hover:border-green-500/50 transition-colors duration-300 transform hover:-translate-y-1">
+          <div class="mx-auto bg-green-500/10 p-3 rounded-full mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-green-400">
+              <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-2.5-2.5" />
+              <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 2.5-2.5" />
+              <path d="M5 10a2.5 2.5 0 0 1 0 5" />
+              <path d="M19 10a2.5 2.5 0 0 0 0 5" />
+              <path d="M5 18a2.5 2.5 0 0 0 0-5" />
+              <path d="M19 18a2.5 2.5 0 0 1 0-5" />
+            </svg>
+          </div>
+          <h2 class="text-xl font-bold text-green-400">
+            ÉTAPE 3 : Synthèse et Action
+          </h2>
+          <p class="text-sm text-slate-400 mt-2 flex-grow">
+            Quel est mon meilleur coup ?
+          </p>
+          <button
+            onclick="openModal('modal-step3')"
+            class="mt-6 w-full bg-green-500/20 text-green-300 font-semibold py-2 px-4 rounded-lg hover:bg-green-500/40 transition">
+            Décider du Coup
+          </button>
+        </div>
+      </main>
+
+      <footer class="mt-12 text-center z-10">
+        <button
+          onclick="openModal('modal-resources')"
+          class="bg-slate-700 text-slate-300 font-semibold py-2 px-6 rounded-lg hover:bg-slate-600 transition-colors duration-300 flex items-center mx-auto">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="mr-2">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+          Ressources Utiles
+        </button>
+      </footer>
+    </div>
+
+    <!-- MODALES -->
+    <div id="modal-container">
+      <!-- Modals will be dynamically generated here -->
+    </div>
+
+    <script>
+      function createModal(id, title, color, content) {
+        const modalHTML = `
+                <div id="${id}" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-hidden">
+                    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm modal-overlay" onclick="closeModal('${id}')"></div>
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700 shadow-2xl w-full max-w-2xl relative modal-content">
+                        <h3 class="text-2xl font-bold ${color} mb-6">${title}</h3>
+                        ${content}
+                        <button onclick="closeModal('${id}')" class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors text-3xl font-bold">&times;</button>
+                    </div>
+                </div>
+            `;
+        document
+          .getElementById("modal-container")
+          .insertAdjacentHTML("beforeend", modalHTML);
+      }
+
+      function openModal(modalId) {
+        document.getElementById(modalId)?.classList.remove("modal-hidden");
+      }
+      function closeModal(modalId) {
+        document.getElementById(modalId)?.classList.add("modal-hidden");
+      }
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          document.querySelectorAll(".fixed.inset-0").forEach((modal) => {
+            if (!modal.classList.contains("modal-hidden")) closeModal(modal.id);
+          });
+        }
+      });
+
+      // Initialize Modals on DOMContentLoaded
+      document.addEventListener("DOMContentLoaded", () => {
+        createModal(
+          "modal-step1",
+          "ÉTAPE 1 : Le Radar Tactique",
+          "text-red-400",
+          `
+                <ul class="space-y-4 text-slate-300 mb-6">
+                    <li><strong>Son Dernier Coup :</strong> Quelle est son intention ? (Attaque, défense, préparation)</li>
+                    <li><strong>Scan des Menaces Forcées :</strong> Listez tous les <strong>Échecs</strong>, <strong>Captures</strong>, et <strong>Menaces</strong> directes possibles (pour vous et pour lui).</li>
+                    <li><strong>Son Plan :</strong> Où ses pièces convergent-elles ? Quel est son objectif à long terme ?</li>
+                </ul>
+                <div class="bg-slate-700/50 p-4 rounded-lg">
+                    <h4 class="font-bold text-cyan-400 mb-2">Le Conseil du Coach</h4>
+                    <p class="text-sm text-slate-400">"Votre temps de réflexion devrait être investi à 80% sur les intentions de votre adversaire. La plupart des parties sont perdues, pas gagnées. Évitez de perdre avant de chercher à gagner."</p>
+                </div>
+                 <textarea placeholder="Mes notes sur les menaces adverses..." class="w-full h-24 mt-4 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+            `
+        );
+
+        createModal(
+          "modal-step2",
+          "ÉTAPE 2 : L'Évaluation Stratégique",
+          "text-amber-400",
+          `
+                <ul class="space-y-4 text-slate-300 mb-6">
+                    <li><strong>Sécurité des Rois :</strong> Lequel des deux rois est le plus vulnérable ? Y a-t-il des courants d'air ?</li>
+                    <li><strong>Structure de Pions :</strong> Qui contrôle le centre ? Y a-t-il des faiblesses (pions isolés, doublés) à attaquer ?</li>
+                    <li><strong>Activité des Pièces :</strong> Identifiez votre <strong>pire pièce</strong> et sa <strong>meilleure pièce</strong>. C'est la clé de votre plan.</li>
+                </ul>
+                <div class="bg-slate-700/50 p-4 rounded-lg">
+                    <h4 class="font-bold text-cyan-400 mb-2">Le Conseil du Coach</h4>
+                    <p class="text-sm text-slate-400">"N'évaluez pas la position en vous demandant 'qui est mieux ?'. Demandez-vous 'quel est le problème à résoudre dans cette position ?'. La réponse sera votre plan."</p>
+                </div>
+                 <textarea placeholder="Mes notes sur la stratégie et la structure..." class="w-full h-24 mt-4 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+            `
+        );
+
+        createModal(
+          "modal-step3",
+          "ÉTAPE 3 : La Synthèse et l'Action",
+          "text-green-400",
+          `
+                 <div class="mb-6">
+                    <label class="font-semibold text-slate-300">Mon objectif pour ce coup :</label>
+                    <input type="text" placeholder="Ex: Améliorer mon fou, défendre e5, attaquer f7..." class="w-full mt-2 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div class="mb-6">
+                    <label class="font-semibold text-slate-300">Mes 3 coups candidats :</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
+                        <input type="text" placeholder="Coup 1" class="bg-slate-700/50 border border-slate-600 rounded-lg p-2 text-center">
+                        <input type="text" placeholder="Coup 2" class="bg-slate-700/50 border border-slate-600 rounded-lg p-2 text-center">
+                        <input type="text" placeholder="Coup 3" class="bg-slate-700/50 border border-slate-600 rounded-lg p-2 text-center">
+                    </div>
+                </div>
+                <div class="bg-slate-700/50 p-4 rounded-lg">
+                    <h4 class="font-bold text-cyan-400 mb-2">Le Conseil du Coach</h4>
+                    <p class="text-sm text-slate-400">"Ne tombez pas amoureux de votre premier coup candidat. Le calcul discipliné de 2 ou 3 options, même rapidement, vous sauvera d'innombrables erreurs."</p>
+                </div>
+                <div class="mt-6 p-4 border-2 border-dashed border-violet-500 rounded-lg">
+                    <h4 class="font-bold text-violet-400 text-center">VÉRIFICATION FINALE ANTI-GAFFE</h4>
+                    <p class="text-center text-slate-400 mt-1">Après le coup que j'ai choisi, est-ce qu'une de mes pièces est en prise ?</p>
+                </div>
+            `
+        );
+
+        createModal(
+          "modal-resources",
+          "Ressources Utiles",
+          "text-cyan-400",
+          `
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-slate-300">
+                <div>
+                    <h4 class="font-semibold mb-2">Entraînement Tactique</h4>
+                    <ul class="space-y-2">
+                        <li><a href="https://lichess.org/training" target="_blank" class="hover:text-cyan-400">Lichess Puzzles</a> - Illimité et gratuit.</li>
+                        <li><a href="https://www.chesstempo.com" target="_blank" class="hover:text-cyan-400">Chess Tempo</a> - Pour un entraînement plus ciblé.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">Apprentissage des Ouvertures</h4>
+                    <ul class="space-y-2">
+                        <li><a href="https://lichess.org/analysis" target="_blank" class="hover:text-cyan-400">Échiquier d'analyse Lichess</a></li>
+                        <li><a href="https://www.chessable.com" target="_blank" class="hover:text-cyan-400">Chessable</a> - Apprentissage par répétition espacée.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">Livres de Référence</h4>
+                    <ul class="space-y-2">
+                        <li>"Pensez comme un grand maître" - A. Kotov</li>
+                        <li>"Comment Mûrir son Style" - J. Silman</li>
+                        <li>"Les 100 finales qu'il faut connaître" - J. de la Villa</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">Stratégie & Analyse</h4>
+                     <ul class="space-y-2">
+                        <li><a href="https://www.youtube.com/@Blitzstream" target="_blank" class="hover:text-cyan-400">Blitzstream (FR)</a> - Kévin Bordi</li>
+                        <li><a href="https://www.youtube.com/@dechecs" target="_blank" class="hover:text-cyan-400">Apprendre les échecs (FR)</a></li>
+                    </ul>
+                </div>
+            </div>
+            `
+        );
+      });
+    </script>
+  </body>
+</html>
