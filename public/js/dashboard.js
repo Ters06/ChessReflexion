@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const userData = JSON.parse(localStorage.getItem("userData"));
   const gamesListContainer = document.getElementById("games-list");
   const newGameButton = document.getElementById("new-game-button");
-  const startGameBtn = document.getElementById("start-game-btn");
 
   // 1. Affiche le nom de l'utilisateur
   if (userData) {
@@ -70,38 +69,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 3. Gérer la création d'une nouvelle partie
+  // 3. Gérer l'ouverture de la modale de création de partie
   if (newGameButton) {
     newGameButton.addEventListener("click", () => {
+      // La logique de création est maintenant dans main.js pour éviter les erreurs.
+      // Ce bouton ne fait qu'ouvrir la modale.
       openModal("modal-new-game");
-    });
-  }
-
-  if (startGameBtn) {
-    startGameBtn.addEventListener("click", async () => {
-      const selectedColor = document.querySelector(
-        'input[name="player-color"]:checked'
-      ).value;
-
-      try {
-        const token = localStorage.getItem("jwt_token");
-        const response = await fetch("/.netlify/functions/create-game", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ played_as: selectedColor }),
-        });
-
-        if (!response.ok) throw new Error("La création de la partie a échoué.");
-
-        const newGame = await response.json();
-        window.location.href = `/review.html?id=${newGame.id}`;
-      } catch (error) {
-        console.error("Erreur:", error);
-        alert("Impossible de créer une nouvelle partie. Veuillez réessayer.");
-      }
     });
   }
 
