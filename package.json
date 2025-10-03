@@ -5,12 +5,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [
+    "chess",
+    "training"
+  ],
   "author": "Terence Leclercq",
   "license": "ISC",
   "dependencies": {
     "@neondatabase/serverless": "^0.9.1",
     "cookie": "^0.6.0",
+    "googleapis": "^128.0.0",
     "google-auth-library": "^9.10.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.3"
   }
 }
