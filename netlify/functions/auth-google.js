@@ -8,7 +8,7 @@ exports.handler = async function (event, context) {
 
   // L'URL de notre fonction de callback que Google doit appeler après l'authentification.
   // Netlify fournit automatiquement l'URL de base du site dans process.env.URL.
-  const redirectURL = `${process.env.URL}/.netlify/functions/auth-callback`;
+  const redirectURL = `https://chessdojo.netlify.app/.netlify/functions/auth-callback`;
 
   const oauth2Client = new OAuth2Client(clientID);
 

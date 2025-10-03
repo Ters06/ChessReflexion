@@ -19,7 +19,7 @@ exports.handler = async function (event, context) {
 
   const clientID = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const redirectURL = `${process.env.URL}/.netlify/functions/auth-callback`;
+  const redirectURL = `https://chessdojo.netlify.app/.netlify/functions/auth-callback`;
 
   const oauth2Client = new OAuth2Client(clientID, clientSecret, redirectURL);
 
