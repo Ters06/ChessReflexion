@@ -7,15 +7,15 @@
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; 
-                   script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; 
+                   script-src 'self' https://cdn.tailwindcss.com; 
                    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
                    font-src 'self' https://fonts.gstatic.com; 
-                   connect-src 'self' https://accounts.google.com;" />
+                   connect-src 'self';" />
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
 
-    <title>Dojo Mental - Application</title>
+    <title>Dojo Mental - Mon Tableau de Bord</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -37,8 +37,9 @@
       <p class="text-slate-400">Vérification de la session...</p>
     </div>
 
-    <div id="app-content" class="min-h-screen flex flex-col p-4">
-      <header class="flex justify-between items-center mb-12">
+    <div id="app-content" class="min-h-screen flex flex-col p-4 sm:p-6 md:p-8">
+      <header
+        class="flex flex-wrap gap-4 justify-between items-center mb-8 sm:mb-12">
         <div>
           <h1 class="text-2xl font-bold text-cyan-400">Dojo Mental</h1>
           <p id="welcome-message" class="text-slate-400"></p>
@@ -50,18 +51,25 @@
         </button>
       </header>
 
-      <main class="flex-grow flex items-center justify-center">
-        <div class="text-center">
-          <h2 class="text-3xl font-bold text-slate-300">
-            Bienvenue dans votre Dojo.
-          </h2>
-          <p class="text-slate-500 mt-2">
-            Le contenu de l'application sera développé ici.
-          </p>
+      <main class="flex-grow w-full max-w-5xl mx-auto">
+        <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+          <h2 class="text-3xl font-bold text-slate-200">Mes Parties</h2>
+          <button
+            id="new-game-btn"
+            class="bg-violet-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-violet-700 transition-transform hover:scale-105">
+            + Nouvelle Partie
+          </button>
+        </div>
+
+        <div
+          id="games-list-container"
+          class="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700 p-6">
+          <!-- La liste des parties sera injectée ici par JavaScript -->
         </div>
       </main>
     </div>
 
     <script src="/js/app.js"></script>
+    <script src="/js/dashboard.js"></script>
   </body>
 </html>
