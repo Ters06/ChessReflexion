@@ -75,12 +75,11 @@
     <script>
       // Logique spécifique à la page de profil
       document.addEventListener("DOMContentLoaded", () => {
-        // Le script app.js aura déjà vérifié l'authentification et stocké les infos utilisateur
-        // On se contente de les afficher.
+        // app.js s'est déjà chargé de vérifier l'authentification et de stocker les infos.
+        // Ce script se contente d'afficher les données dans le corps de la page.
         const userData = JSON.parse(localStorage.getItem("userData"));
         if (userData) {
-          document.getElementById("user-name-header").textContent =
-            userData.name;
+          // CORRECTION : On ne touche plus à l'en-tête ici.
           document.getElementById("user-name-profile").textContent =
             userData.name;
           document.getElementById("user-email").textContent = userData.email;
@@ -98,17 +97,11 @@
                   "/.netlify/functions/delete-user",
                   {
                     method: "POST",
-                    headers: {
-                      Authorization: `Bearer ${localStorage.getItem(
-                        "jwt_token"
-                      )}`,
-                    },
                   }
                 );
 
                 if (response.ok) {
                   alert("Votre compte a été supprimé avec succès.");
-                  localStorage.removeItem("jwt_token");
                   localStorage.removeItem("userData");
                   window.location.href = "/";
                 } else {
