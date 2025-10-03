@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- POLITIQUE DE SÉCURITÉ DU CONTENU (CSP) MISE À JOUR -->
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; 
@@ -26,11 +25,17 @@
     <style>
       body {
         font-family: "Inter", sans-serif;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .main-content {
+        flex-grow: 1;
       }
     </style>
   </head>
   <body class="bg-slate-900 text-white antialiased">
-    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+    <main class="main-content flex flex-col items-center justify-center p-4">
       <div
         class="absolute inset-0 bg-grid-slate-700/20 [mask-image:linear-gradient(to_bottom,white_20%,transparent_100%)]"></div>
       <header class="text-center mb-12 z-10">
@@ -68,7 +73,11 @@
           >
         </a>
       </div>
-    </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="/js/main.js"></script>
     <script src="/js/auth.js"></script>
   </body>
 </html>
