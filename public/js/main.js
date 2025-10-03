@@ -176,6 +176,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // 3. Attach ALL event listeners now that modals exist
+  setupModalWorkflow();
+  setupGlobalEventListeners();
   setupTabs();
   console.log("main.js: Initialisation terminée.");
 });
@@ -194,4 +197,56 @@ function updateHeaderState() {
     userInfoHeader.style.display = "none";
     loginLinkHeader.style.display = "flex";
   }
+}
+
+function setupModalWorkflow() {
+  // This function now centralizes all modal workflow logic
+  const gotoStep2Btn = document.getElementById("goto-step2");
+  if (gotoStep2Btn) {
+    gotoStep2Btn.addEventListener("click", () => {
+      document.getElementById("summary-step1").textContent =
+        document.getElementById("reflection-step1").value || "Aucune note.";
+      closeModal("modal-step1");
+      openModal("modal-step2");
+    });
+  }
+
+  const backToStep1Btn = document.getElementById("back-to-step1");
+  if (backToStep1Btn)
+    backToStep1Btn.addEventListener("click", () => {
+      closeModal("modal-step2");
+      openModal("modal-step1");
+    });
+
+  const gotoStep3Btn = document.getElementById("goto-step3");
+  if (gotoStep3Btn) {
+    gotoStep3Btn.addEventListener("click", () => {
+      document.getElementById("summary-step2-1").textContent =
+        document.getElementById("reflection-step1").value || "Aucune note.";
+      document.getElementById("summary-step2-2").textContent =
+        document.getElementById("reflection-step2").value || "Aucune note.";
+      closeModal("modal-step2");
+      openModal("modal-step3");
+    });
+  }
+
+  const backToStep2Btn = document.getElementById("back-to-step2");
+  if (backToStep2Btn)
+    backToStep2Btn.addEventListener("click", () => {
+      closeModal("modal-step3");
+      openModal("modal-step2");
+    });
+
+  // Note: The 'save-reflection' button is handled by review.js as it needs game-specific context
+}
+
+function setupGlobalEventListeners() {
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      const openModalEl = document.querySelector(
+        ".fixed.inset-0:not(.modal-hidden)"
+      );
+      if (openModalEl) closeModal(openModalEl.id);
+    }
+  });
 }

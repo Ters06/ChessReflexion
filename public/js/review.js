@@ -64,8 +64,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       history = gameLogic.history({ verbose: true });
       currentMoveIndex = history.length;
 
-      setupEventListeners();
       updateUI();
+      setupEventListeners(); // Now it's safe to call this
     } catch (error) {
       console.error("Erreur d'initialisation:", error);
       document.getElementById(
@@ -340,43 +340,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     const moveInput = document.getElementById("move-input");
     const submitMoveBtn = document.getElementById("submit-move");
 
-    submitMoveBtn.addEventListener("click", () => {
-      if (moveInput.value) handleNewMove(moveInput.value);
-    });
-    moveInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter" && moveInput.value) handleNewMove(moveInput.value);
-    });
+    if (submitMoveBtn) {
+      submitMoveBtn.addEventListener("click", () => {
+        if (moveInput.value) handleNewMove(moveInput.value);
+      });
+    }
+    if (moveInput) {
+      moveInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && moveInput.value)
+          handleNewMove(moveInput.value);
+      });
+    }
 
-    // Modal workflow
-    document.getElementById("goto-step2").addEventListener("click", () => {
-      document.getElementById("summary-step1").textContent =
-        document.getElementById("reflection-step1").value || "Aucune note.";
-      closeModal("modal-step1");
-      openModal("modal-step2");
-    });
-
-    document.getElementById("back-to-step1").addEventListener("click", () => {
-      closeModal("modal-step2");
-      openModal("modal-step1");
-    });
-
-    document.getElementById("goto-step3").addEventListener("click", () => {
-      document.getElementById("summary-step2-1").textContent =
-        document.getElementById("reflection-step1").value || "Aucune note.";
-      document.getElementById("summary-step2-2").textContent =
-        document.getElementById("reflection-step2").value || "Aucune note.";
-      closeModal("modal-step2");
-      openModal("modal-step3");
-    });
-
-    document.getElementById("back-to-step2").addEventListener("click", () => {
-      closeModal("modal-step3");
-      openModal("modal-step2");
-    });
-
-    document
-      .getElementById("save-reflection")
-      .addEventListener("click", saveReflection);
+    // This button is specific to this page's logic
+    const saveReflectionBtn = document.getElementById("save-reflection");
+    if (saveReflectionBtn) {
+      saveReflectionBtn.addEventListener("click", saveReflection);
+    }
   }
 
   // --- START THE PAGE ---
