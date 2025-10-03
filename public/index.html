@@ -2,8 +2,22 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale-1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- En-têtes de Sécurité -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; 
+                   script-src 'self' https://cdn.tailwindcss.com; 
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+                   font-src https://fonts.gstatic.com;
+                   connect-src 'self';" />
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
     <title>Dojo Mental - Connexion</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -55,7 +69,7 @@
       </div>
     </div>
 
-    <!-- We will add the authentication script later -->
-    <!-- <script src="/js/auth.js"></script> -->
+    <!-- On charge maintenant notre script d'authentification -->
+    <script src="/js/auth.js"></script>
   </body>
 </html>
