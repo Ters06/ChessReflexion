@@ -137,14 +137,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         status = `Partie terminée. Résultat: ${gameData.result} (${
           gameData.termination || "inconnu"
         })`;
-      } else if (currentGame.game_over()) {
+      } else if (currentGame.isGameOver()) {
         status = "FIN DE PARTIE";
-        if (currentGame.in_checkmate()) {
+        if (currentGame.isCheckmate()) {
           gameData.status = "completed";
           gameData.result = currentGame.turn() === "b" ? "1-0" : "0-1";
           gameData.termination = "checkmate";
           saveGameState();
-        } else if (currentGame.in_stalemate() || currentGame.in_draw()) {
+        } else if (currentGame.isStalemate() || currentGame.isDraw()) {
           gameData.status = "completed";
           gameData.result = "1/2-1/2";
           gameData.termination = "draw";
