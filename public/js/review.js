@@ -184,7 +184,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             </button>
         `;
       const dojoButton = document.getElementById("analyse-button");
-      if (isPlayerTurn && !currentGame.game_over()) {
+      if (isPlayerTurn && !currentGame.isGameOver()) {
         dojoButton.className +=
           " bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/40";
         dojoButton.disabled = false;
@@ -198,12 +198,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       moveInputArea.style.display =
         currentMoveIndex === history.length &&
         gameData.status === "in_progress" &&
-        !currentGame.game_over()
+        !currentGame.isGameOver()
           ? "block"
           : "none";
 
       gameActionsContainer.innerHTML = "";
-      if (gameData.status === "in_progress" && !currentGame.game_over()) {
+      if (gameData.status === "in_progress" && !currentGame.isGameOver()) {
         gameActionsContainer.innerHTML = `
                 <button id="resign-btn" class="bg-orange-500/20 text-orange-300 text-sm font-semibold py-2 px-3 rounded-lg hover:bg-orange-500/40 transition">Abandon</button>
                 <button id="draw-btn" class="bg-sky-500/20 text-sky-300 text-sm font-semibold py-2 px-3 rounded-lg hover:bg-sky-500/40 transition">Nulle</button>
