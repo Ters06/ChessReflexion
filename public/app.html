@@ -3,10 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- En-têtes de Sécurité (adaptés pour une application connectée) -->
+    <!-- POLITIQUE DE SÉCURITÉ DU CONTENU (CSP) CORRIGÉE -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self';" />
+      content="default-src 'self'; 
+                   script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; 
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+                   font-src 'self' https://fonts.gstatic.com; 
+                   connect-src 'self';" />
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -23,19 +27,16 @@
       body {
         font-family: "Inter", sans-serif;
       }
-      /* Affiche un état de chargement par défaut */
       #app-content {
         display: none;
       }
     </style>
   </head>
   <body class="bg-slate-900 text-white antialiased">
-    <!-- État de chargement -->
     <div id="loader" class="min-h-screen flex items-center justify-center">
       <p class="text-slate-400">Vérification de la session...</p>
     </div>
 
-    <!-- Contenu de l'application (caché par défaut) -->
     <div id="app-content" class="min-h-screen flex flex-col p-4">
       <header class="flex justify-between items-center mb-12">
         <div>
@@ -50,7 +51,6 @@
       </header>
 
       <main class="flex-grow flex items-center justify-center">
-        <!-- Ici viendra le contenu principal de notre application (Dojo, Nouvelle Partie, etc.) -->
         <div class="text-center">
           <h2 class="text-3xl font-bold text-slate-300">
             Bienvenue dans votre Dojo.
