@@ -85,13 +85,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!fen) return;
       boardElement.innerHTML = "";
       const tempGame = new Chess(fen); // This should now work reliably
-      if (!tempGame || typeof tempGame.board !== "function") {
-        console.error(
-          "Échec de l'initialisation de l'objet Chess avec le FEN:",
-          fen
-        );
-        return;
-      }
+      // if (!tempGame || typeof tempGame.board !== "function") {
+      //   console.error(
+      //     "Échec de l'initialisation de l'objet Chess avec le FEN:",
+      //     fen
+      //   );
+      //   return;
+      // }
 
       const boardArray = tempGame.board();
       const rows =
@@ -180,7 +180,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       dojoContainer.innerHTML = `
             <button id="analyse-button" class="w-full font-semibold py-3 px-4 rounded-lg transition">
-                Analyser avec le Dojo
+                Ouvrir le Dojo
             </button>
         `;
       const dojoButton = document.getElementById("analyse-button");
