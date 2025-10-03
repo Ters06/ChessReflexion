@@ -4,12 +4,16 @@ const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 const { Pool } = require("@neondatabase/serverless");
 
-// Fonction helper pour extraire l'ID utilisateur du token JWT
+// FONCTION HELPER MISE À JOUR : Lit le token depuis les cookies
 function getUserId(event) {
-  const authHeader = event.headers.authorization;
-  if (!authHeader) return null;
-  const token = authHeader.split(" ")[1];
-  if (!token) return null;
+  const cookies = event.headers.cookie
+    ? cookie.parse(event.headers.cookie)
+    : {};
+  const token = cookies.jwt_token;
+
+  if (!token) {
+    return null;
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -38,9 +42,6 @@ exports.handler = async function (event, context) {
       connectionString: process.env.NETLIFY_DATABASE_URL,
     });
 
-    // La suppression de l'utilisateur entraînera la suppression en cascade
-    // de toutes ses parties et réflexions grâce à la contrainte "ON DELETE CASCADE"
-    // définie dans notre schéma de base de données.
     const query = `
             DELETE FROM users WHERE id = $1;
         `;
@@ -49,7 +50,6 @@ exports.handler = async function (event, context) {
 
     await pool.end();
 
-    // Crée un cookie expiré pour déconnecter l'utilisateur après la suppression.
     const expiredCookie = cookie.serialize("jwt_token", "", {
       httpOnly: true,
       secure: true,

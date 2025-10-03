@@ -2,15 +2,22 @@
 
 const jwt = require("jsonwebtoken");
 const { Pool } = require("@neondatabase/serverless");
+const cookie = require("cookie");
 
-// Fonction helper pour extraire l'ID utilisateur du token
+// FONCTION HELPER MISE À JOUR : Lit le token depuis les cookies
 function getUserId(event) {
-  const authHeader = event.headers.authorization;
-  if (!authHeader) return null;
-  const token = authHeader.split(" ")[1];
-  if (!token) return null;
+  // 1. Parser les cookies depuis les en-têtes de la requête
+  const cookies = event.headers.cookie
+    ? cookie.parse(event.headers.cookie)
+    : {};
+  const token = cookies.jwt_token;
+
+  if (!token) {
+    return null;
+  }
 
   try {
+    // 2. Vérifier le token et extraire l'ID
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return decoded.id;
   } catch (error) {
@@ -20,7 +27,6 @@ function getUserId(event) {
 }
 
 exports.handler = async function (event, context) {
-  // Cette fonction ne doit être accessible qu'en GET
   if (event.httpMethod !== "GET") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }

@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const userData = JSON.parse(localStorage.getItem("userData"));
   const gamesListContainer = document.getElementById("games-list");
   const newGameButton = document.getElementById("new-game-button");
+  const startGameBtn = document.getElementById("start-game-btn");
 
   // 1. Affiche le nom de l'utilisateur
   if (userData) {
@@ -20,10 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
     gamesListContainer.innerHTML = `<p class="text-slate-400 text-center col-span-full">Chargement de vos parties...</p>`;
 
     try {
-      const token = localStorage.getItem("jwt_token");
-      const response = await fetch("/.netlify/functions/get-games", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // CORRECTION : On ne spécifie plus l'en-tête 'Authorization'.
+      // Le navigateur enverra le cookie HttpOnly automatiquement.
+      const response = await fetch("/.netlify/functions/get-games");
 
       if (!response.ok)
         throw new Error("Impossible de récupérer la liste des parties.");
@@ -72,8 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // 3. Gérer l'ouverture de la modale de création de partie
   if (newGameButton) {
     newGameButton.addEventListener("click", () => {
-      // La logique de création est maintenant dans main.js pour éviter les erreurs.
-      // Ce bouton ne fait qu'ouvrir la modale.
       openModal("modal-new-game");
     });
   }

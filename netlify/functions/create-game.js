@@ -2,13 +2,18 @@
 
 const jwt = require("jsonwebtoken");
 const { Pool } = require("@neondatabase/serverless");
+const cookie = require("cookie");
 
-// Fonction helper pour extraire le token
+// FONCTION HELPER MISE À JOUR : Lit le token depuis les cookies
 function getUserId(event) {
-  const authHeader = event.headers.authorization;
-  if (!authHeader) return null;
-  const token = authHeader.split(" ")[1];
-  if (!token) return null;
+  const cookies = event.headers.cookie
+    ? cookie.parse(event.headers.cookie)
+    : {};
+  const token = cookies.jwt_token;
+
+  if (!token) {
+    return null;
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -46,8 +51,8 @@ exports.handler = async function (event, context) {
     });
 
     const query = `
-            INSERT INTO games (user_id, pgn, played_as, status)
-            VALUES ($1, '', $2, 'in_progress')
+            INSERT INTO games (user_id, pgn, played_as, status, updated_at)
+            VALUES ($1, '', $2, 'in_progress', CURRENT_TIMESTAMP)
             RETURNING id;
         `;
 

@@ -2,13 +2,18 @@
 
 const jwt = require("jsonwebtoken");
 const { Pool } = require("@neondatabase/serverless");
+const cookie = require("cookie");
 
-// Fonction helper pour extraire l'ID utilisateur du token JWT
+// FONCTION HELPER MISE À JOUR : Lit le token depuis les cookies
 function getUserId(event) {
-  const authHeader = event.headers.authorization;
-  if (!authHeader) return null;
-  const token = authHeader.split(" ")[1];
-  if (!token) return null;
+  const cookies = event.headers.cookie
+    ? cookie.parse(event.headers.cookie)
+    : {};
+  const token = cookies.jwt_token;
+
+  if (!token) {
+    return null;
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -41,7 +46,7 @@ exports.handler = async function (event, context) {
       reflection_step3,
     } = JSON.parse(event.body);
 
-    if (!gameId || !plyNumber) {
+    if (!gameId || plyNumber === undefined) {
       return {
         statusCode: 400,
         body: JSON.stringify({ message: "Données de réflexion manquantes." }),
@@ -52,8 +57,6 @@ exports.handler = async function (event, context) {
       connectionString: process.env.NETLIFY_DATABASE_URL,
     });
 
-    // ÉTAPE DE SÉCURITÉ CRUCIALE :
-    // Avant d'insérer, on vérifie que la partie appartient bien à l'utilisateur connecté.
     const ownershipCheckQuery =
       "SELECT id FROM games WHERE id = $1 AND user_id = $2";
     const ownershipResult = await pool.query(ownershipCheckQuery, [
@@ -69,7 +72,6 @@ exports.handler = async function (event, context) {
       };
     }
 
-    // Utilisation de INSERT ... ON CONFLICT (UPSERT) pour créer ou mettre à jour la réflexion.
     const upsertQuery = `
             INSERT INTO move_reflections (game_id, ply_number, reflection_step1, reflection_step2, reflection_step3)
             VALUES ($1, $2, $3, $4, $5)
@@ -99,8 +101,7 @@ exports.handler = async function (event, context) {
     return {
       statusCode: 500,
       body: JSON.stringify({
-        message:
-          "Une erreur est survenue lors de la sauvegarde de la réflexion.",
+        message: "Une erreur est survenue lors de la sauvegarde.",
       }),
     };
   }

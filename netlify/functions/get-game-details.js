@@ -2,13 +2,18 @@
 
 const jwt = require("jsonwebtoken");
 const { Pool } = require("@neondatabase/serverless");
+const cookie = require("cookie");
 
-// Fonction helper pour extraire l'ID utilisateur du token JWT
+// FONCTION HELPER MISE À JOUR : Lit le token depuis les cookies
 function getUserId(event) {
-  const authHeader = event.headers.authorization;
-  if (!authHeader) return null;
-  const token = authHeader.split(" ")[1];
-  if (!token) return null;
+  const cookies = event.headers.cookie
+    ? cookie.parse(event.headers.cookie)
+    : {};
+  const token = cookies.jwt_token;
+
+  if (!token) {
+    return null;
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -45,7 +50,6 @@ exports.handler = async function (event, context) {
       connectionString: process.env.NETLIFY_DATABASE_URL,
     });
 
-    // Première requête : récupérer les données de la partie et vérifier la propriété
     const gameQuery = `
             SELECT id, user_id, pgn, played_as, status, result, termination, updated_at
             FROM games
@@ -54,7 +58,6 @@ exports.handler = async function (event, context) {
     const gameResult = await pool.query(gameQuery, [gameId, userId]);
 
     if (gameResult.rows.length === 0) {
-      // Si aucune ligne n'est retournée, soit la partie n'existe pas, soit l'utilisateur n'est pas le propriétaire.
       return {
         statusCode: 404,
         body: JSON.stringify({
@@ -65,7 +68,6 @@ exports.handler = async function (event, context) {
 
     const gameDetails = gameResult.rows[0];
 
-    // Seconde requête : récupérer toutes les réflexions associées à cette partie
     const reflectionsQuery = `
             SELECT ply_number, reflection_step1, reflection_step2, reflection_step3
             FROM move_reflections
@@ -75,7 +77,6 @@ exports.handler = async function (event, context) {
 
     await pool.end();
 
-    // Combiner les résultats
     const responsePayload = {
       ...gameDetails,
       reflections: reflectionsResult.rows,
@@ -86,10 +87,7 @@ exports.handler = async function (event, context) {
       body: JSON.stringify(responsePayload),
     };
   } catch (error) {
-    console.error(
-      "Erreur lors de la récupération des détails de la partie:",
-      error
-    );
+    console.error("Erreur lors de la récupération des détails:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({
