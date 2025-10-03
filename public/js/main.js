@@ -59,7 +59,21 @@ function setupTabs() {
 document.addEventListener("DOMContentLoaded", () => {
   console.log("main.js: DOMContentLoaded - Démarrage de l'initialisation.");
 
-  // 1. Inject Footer
+  // 1. Inject Header and Footer
+  const headerContainer = document.getElementById("header-container");
+  if (headerContainer) {
+    fetch("/components/header.html")
+      .then((response) =>
+        response.ok ? response.text() : Promise.reject("Header not found")
+      )
+      .then((data) => {
+        headerContainer.innerHTML = data;
+        // Once the header is loaded, update its state
+        updateHeaderState();
+      })
+      .catch((error) => console.error("Error loading header:", error));
+  }
+
   const footerContainer = document.getElementById("footer-container");
   if (footerContainer) {
     fetch("/components/footer.html")
@@ -156,3 +170,26 @@ document.addEventListener("DOMContentLoaded", () => {
   setupTabs();
   console.log("main.js: Initialisation terminée.");
 });
+
+function updateHeaderState() {
+  const token = localStorage.getItem("jwt_token");
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const userInfoHeader = document.getElementById("user-info-header");
+  const loginLinkHeader = document.getElementById("login-link-header");
+  const userNameHeader = document.getElementById("user-name-header");
+
+  if (
+    token &&
+    userData &&
+    userInfoHeader &&
+    loginLinkHeader &&
+    userNameHeader
+  ) {
+    userNameHeader.textContent = userData.name;
+    userInfoHeader.style.display = "flex";
+    loginLinkHeader.style.display = "none";
+  } else if (userInfoHeader && loginLinkHeader) {
+    userInfoHeader.style.display = "none";
+    loginLinkHeader.style.display = "flex";
+  }
+}
