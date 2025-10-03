@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       } else {
         status = `Trait aux ${moveColor}`;
-        if (currentGame.in_check()) {
+        if (currentGame.inCheck()) {
           status += ", en échec.";
         }
       }
