@@ -1,0 +1,10 @@
+# Ce fichier indique à Netlify comment construire et déployer le site.
+[build]
+  # Aucune commande de build n'est nécessaire pour notre site statique.
+  command = "# no build command"
+  # Le dossier à publier est "public".
+  publish = "public/"
+
+[functions]
+  # Nos fonctions serverless se trouveront dans ce dossier.
+  directory = "netlify/functions/"

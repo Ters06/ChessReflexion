@@ -1,0 +1,10 @@
+{
+  "name": "chessreflexion",
+  "version": "1.0.0",
+  "description": "Une application web pour structurer la réflexion aux échecs.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Terence Leclercq",
+  "license": "ISC"
+}
