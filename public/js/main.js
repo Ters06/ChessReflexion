@@ -30,12 +30,21 @@ function createModal(id, title, color, content, isResourceModal = false) {
 
 function openModal(modalId) {
   const modal = document.getElementById(modalId);
-  if (modal) modal.classList.remove("modal-hidden");
+  if (modal) {
+    modal.classList.remove("modal-hidden");
+    modal.style.display = "flex"; // Ensure it's visible
+  }
 }
 
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
-  if (modal) modal.classList.add("modal-hidden");
+  if (modal) {
+    modal.classList.add("modal-hidden");
+    // We use a timeout to allow the fade-out animation to complete
+    setTimeout(() => {
+      modal.style.display = "none";
+    }, 300);
+  }
 }
 
 function setupTabs() {
@@ -109,8 +118,39 @@ document.addEventListener("DOMContentLoaded", () => {
     `
   );
 
+  // Export Modal
+  createModal(
+    "modal-export",
+    "Exporter la Partie",
+    "text-cyan-400",
+    `
+        <div class="mb-6"><label class="font-semibold text-slate-300">PGN (Partie Complète)</label><textarea id="export-pgn" readonly class="w-full h-32 mt-2 bg-slate-900/50 border border-slate-600 rounded-lg p-2 font-mono text-sm"></textarea></div>
+        <div><label class="font-semibold text-slate-300">FEN (Position Actuelle)</label><input id="export-fen" readonly type="text" class="w-full mt-2 bg-slate-900/50 border border-slate-600 rounded-lg p-2 font-mono text-sm"></div>
+    `
+  );
+
+  // Dojo Modals
+  createModal(
+    "modal-step1",
+    "ÉTAPE 1 : Le Radar Tactique",
+    "text-red-400",
+    `<p class="text-slate-400 mb-1 text-sm">Limite de 255 caractères.</p><textarea id="reflection-step1" placeholder="Quelles sont les menaces de l'adversaire ? Quels sont les coups forcés ?" maxlength="255" class="w-full h-32 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-500"></textarea><div class="flex justify-end mt-4"><button id="goto-step2" class="bg-amber-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-amber-600 transition">Suivant &rarr;</button></div>`
+  );
+  createModal(
+    "modal-step2",
+    "ÉTAPE 2 : L'Évaluation Stratégique",
+    "text-amber-400",
+    `<div class="mb-4 bg-slate-700/30 p-3 rounded-lg border border-slate-600"><p class="font-bold text-red-300 text-sm">Résumé Étape 1 (Radar):</p><p id="summary-step1" class="text-slate-400 text-sm whitespace-pre-wrap"></p></div><p class="text-slate-400 mb-1 text-sm">Limite de 255 caractères.</p><textarea id="reflection-step2" placeholder="Structure de pions ? Sécurité des rois ? Quelle est ma pire pièce ?" maxlength="255" class="w-full h-32 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea><div class="flex justify-between mt-4"><button id="back-to-step1" class="bg-slate-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-slate-700 transition">&larr; Précédent</button><button id="goto-step3" class="bg-green-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-600 transition">Suivant &rarr;</button></div>`
+  );
+  createModal(
+    "modal-step3",
+    "ÉTAPE 3 : La Synthèse et l'Action",
+    "text-green-400",
+    `<div class="mb-4 bg-slate-700/30 p-3 rounded-lg border border-slate-600"><p class="font-bold text-red-300 text-sm">Résumé Étape 1 (Radar):</p><p id="summary-step2-1" class="text-slate-400 text-sm whitespace-pre-wrap"></p><p class="font-bold text-amber-300 text-sm mt-2">Résumé Étape 2 (Stratégie):</p><p id="summary-step2-2" class="text-slate-400 text-sm whitespace-pre-wrap"></p></div><p class="text-slate-400 mb-1 text-sm">Limite de 255 caractères.</p><textarea id="reflection-step3" placeholder="Mon objectif, mes 3 coups candidats, et la vérification anti-gaffe." maxlength="255" class="w-full h-32 bg-slate-700/50 border border-slate-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea><div class="flex justify-between mt-4"><button id="back-to-step2" class="bg-slate-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-slate-700 transition">&larr; Précédent</button><button id="save-reflection" class="bg-cyan-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-cyan-600 transition">Sauvegarder l'Analyse</button></div>`
+  );
+
   // Resources Modal
-  const resourcesContent = `<div class="sticky top-0 bg-slate-800/80 backdrop-blur-sm z-10"><h3 class="text-2xl font-bold text-cyan-400 p-8 pb-0">Bibliothèque de Ressources</h3><div class="px-8 border-b border-slate-700 text-sm font-medium text-slate-400"><div class="flex -mb-px"><button data-target="panel-tactics" class="tab-button active">Tactique</button><button data-target="panel-strategy" class="tab-button">Stratégie</button><button data-target="panel-endgames" class="tab-button">Finales</button><button data-target="panel-openings" class="tab-button">Ouvertures</button><button data-target="panel-youtube" class="tab-button">YouTube</button></div></div></div><div class="p-8"><div id="panel-tactics" class="tab-panel active"><ul class="space-y-4"><li><a href="https://lichess.org/training" target="_blank" class="font-semibold hover:text-cyan-400">Lichess Puzzles</a><p class="text-sm text-slate-400">Le meilleur pour un entraînement quotidien, gratuit et illimité.</p></li></ul></div><div id="panel-strategy" class="tab-panel">...</div><div id="panel-endgames" class="tab-panel">...</div><div id="panel-openings" class="tab-panel">...</div><div id="panel-youtube" class="tab-panel">...</div></div>`;
+  const resourcesContent = `<div class="sticky top-0 bg-slate-800/80 backdrop-blur-sm z-10"><h3 class="text-2xl font-bold text-cyan-400 p-8 pb-0">Bibliothèque de Ressources</h3><div class="px-8 border-b border-slate-700 text-sm font-medium text-slate-400"><div class="flex -mb-px overflow-x-auto"><button data-target="panel-tactics" class="tab-button active flex-shrink-0">Tactique</button><button data-target="panel-strategy" class="tab-button flex-shrink-0">Stratégie</button><button data-target="panel-endgames" class="tab-button flex-shrink-0">Finales</button><button data-target="panel-openings" class="tab-button flex-shrink-0">Ouvertures</button><button data-target="panel-youtube" class="tab-button flex-shrink-0">YouTube</button></div></div></div><div class="p-8"><div id="panel-tactics" class="tab-panel active"><ul class="space-y-4"><li><a href="https://lichess.org/training" target="_blank" class="font-semibold hover:text-cyan-400">Lichess Puzzles</a><p class="text-sm text-slate-400">Le meilleur pour un entraînement quotidien, gratuit et illimité.</p></li><li><a href="https://www.chesstempo.com" target="_blank" class="font-semibold hover:text-cyan-400">Chess Tempo</a><p class="text-sm text-slate-400">Idéal pour un entraînement ciblé sur des thèmes spécifiques.</p></li></ul></div><div id="panel-strategy" class="tab-panel"><ul class="space-y-4"><li><strong class="text-slate-200">Livre : "Comment Mûrir son Style" - J. Silman</strong><p class="text-sm text-slate-400">La bible pour comprendre les déséquilibres et le jeu positionnel.</p></li></ul></div><div id="panel-endgames" class="tab-panel"><ul class="space-y-4"><li><a href="https://lichess.org/practice" target="_blank" class="font-semibold hover:text-cyan-400">Pratique des Finales Lichess</a><p class="text-sm text-slate-400">Le meilleur moyen d'apprendre par la pratique interactive.</p></li></ul></div><div id="panel-openings" class="tab-panel"><ul class="space-y-4"><li><a href="https://www.chessable.com" target="_blank" class="font-semibold hover:text-cyan-400">Chessable</a><p class="text-sm text-slate-400">La meilleure plateforme pour apprendre un répertoire via la répétition espacée.</p></li></ul></div><div id="panel-youtube" class="tab-panel"><ul class="space-y-4"><li><a href="https://www.youtube.com/@Blitzstream" target="_blank" class="font-semibold hover:text-cyan-400">Blitzstream (FR)</a><p class="text-sm text-slate-400">La référence francophone par Kévin Bordi.</p></li><li><a href="https://www.youtube.com/@DanielNaroditsky" target="_blank" class="font-semibold hover:text-cyan-400">Daniel Naroditsky (EN)</a><p class="text-sm text-slate-400">Probablement le meilleur contenu pédagogique gratuit sur YouTube.</p></li></ul></div></div>`;
   createModal(
     "modal-resources",
     "Bibliothèque de Ressources",
@@ -121,7 +161,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("main.js: Toutes les modales ont été créées.");
 
-  // 3. Attach global event listeners
+  // Hide all modals initially
+  document
+    .querySelectorAll(".fixed.inset-0")
+    .forEach((modal) => (modal.style.display = "none"));
+
+  // Attach global event listeners
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       const openModalEl = document.querySelector(
