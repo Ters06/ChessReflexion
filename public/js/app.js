@@ -1,42 +1,51 @@
-// public/js/app.js
+// Ce script est le "gardien" de toutes les pages qui nécessitent une authentification.
+// Il doit être appelé en premier sur app.html, review.html, profile.html, etc.
 
-// Cette fonction s'exécute dès que la page est chargée.
-document.addEventListener("DOMContentLoaded", async () => {
+(async function checkAuthentication() {
+  const token = localStorage.getItem("jwt_token");
+
+  // S'il n'y a pas de token, pas besoin d'appeler le serveur. On redirige directement.
+  if (!token) {
+    window.location.href = "/";
+    return;
+  }
+
   try {
-    // On appelle notre fonction serverless pour vérifier la session.
-    const response = await fetch("/.netlify/functions/check-auth");
+    // On appelle notre fonction serverless sécurisée pour valider le token.
+    const response = await fetch("/.netlify/functions/check-auth", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
+    // Si la réponse n'est pas OK (ex: 401 Unauthorized), le token est invalide.
     if (!response.ok) {
-      // Si la réponse n'est pas OK (ex: 401 Unauthorized), l'utilisateur n'est pas connecté.
-      // On le redirige immédiatement vers la page d'accueil.
-      window.location.href = "/?error=session_expired";
+      // On nettoie le localStorage et on redirige vers la page de connexion.
+      localStorage.removeItem("jwt_token");
+      localStorage.removeItem("userData");
+      window.location.href = "/";
       return;
     }
 
-    // Si la session est valide, on récupère les données de l'utilisateur.
+    // Si tout est OK, on récupère les données de l'utilisateur.
     const userData = await response.json();
 
-    // On affiche le message de bienvenue.
-    const welcomeMessage = document.getElementById("welcome-message");
-    if (welcomeMessage && userData.name) {
-      welcomeMessage.textContent = `Connecté en tant que ${userData.name}`;
+    // On stocke les données de l'utilisateur dans le localStorage pour que d'autres scripts
+    // sur la page (comme dashboard.js ou profile.js) puissent les utiliser sans refaire d'appel.
+    localStorage.setItem("userData", JSON.stringify(userData));
+
+    // On peut maintenant afficher le nom de l'utilisateur dans l'en-tête (si l'élément existe)
+    const userNameElement =
+      document.getElementById("user-name") ||
+      document.getElementById("user-name-header");
+    if (userNameElement) {
+      userNameElement.textContent = userData.name;
     }
-
-    // On cache le loader et on affiche le contenu de l'application.
-    document.getElementById("loader").style.display = "none";
-    document.getElementById("app-content").style.display = "flex";
   } catch (error) {
-    console.error("Erreur lors de la vérification de la session:", error);
+    console.error("Erreur d'authentification:", error);
     // En cas d'erreur réseau ou autre, on redirige par sécurité.
-    window.location.href = "/?error=check_failed";
+    localStorage.removeItem("jwt_token");
+    localStorage.removeItem("userData");
+    window.location.href = "/";
   }
-
-  // On attache la fonctionnalité de déconnexion au bouton.
-  const logoutButton = document.getElementById("logout-btn");
-  if (logoutButton) {
-    logoutButton.addEventListener("click", () => {
-      // La redirection se fera côté serveur après la suppression du cookie.
-      window.location.href = "/.netlify/functions/logout";
-    });
-  }
-});
+})();

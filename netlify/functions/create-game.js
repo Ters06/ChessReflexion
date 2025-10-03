@@ -1,9 +1,9 @@
-// Cette fonction récupère toutes les parties associées à l'utilisateur authentifié.
+// Cette fonction crée une nouvelle partie dans la base de données pour l'utilisateur authentifié.
 
 const jwt = require("jsonwebtoken");
 const { Pool } = require("@neondatabase/serverless");
 
-// Fonction helper pour extraire l'ID utilisateur du token
+// Fonction helper pour extraire le token
 function getUserId(event) {
   const authHeader = event.headers.authorization;
   if (!authHeader) return null;
@@ -20,8 +20,7 @@ function getUserId(event) {
 }
 
 exports.handler = async function (event, context) {
-  // Cette fonction ne doit être accessible qu'en GET
-  if (event.httpMethod !== "GET") {
+  if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
@@ -34,31 +33,39 @@ exports.handler = async function (event, context) {
   }
 
   try {
+    const { played_as } = JSON.parse(event.body);
+    if (played_as !== "w" && played_as !== "b") {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: "Couleur invalide." }),
+      };
+    }
+
     const pool = new Pool({
       connectionString: process.env.NETLIFY_DATABASE_URL,
     });
 
     const query = `
-            SELECT id, pgn, played_as, status, result, termination, updated_at
-            FROM games
-            WHERE user_id = $1
-            ORDER BY updated_at DESC;
+            INSERT INTO games (user_id, pgn, played_as, status)
+            VALUES ($1, '', $2, 'in_progress')
+            RETURNING id;
         `;
 
-    const { rows } = await pool.query(query, [userId]);
+    const { rows } = await pool.query(query, [userId, played_as]);
+    const newGame = rows[0];
 
     await pool.end();
 
     return {
-      statusCode: 200,
-      body: JSON.stringify(rows),
+      statusCode: 201, // 201 Created
+      body: JSON.stringify(newGame),
     };
   } catch (error) {
-    console.error("Erreur lors de la récupération des parties:", error);
+    console.error("Erreur lors de la création de la partie:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({
-        message: "Une erreur est survenue lors de la récupération des parties.",
+        message: "Une erreur est survenue lors de la création de la partie.",
       }),
     };
   }

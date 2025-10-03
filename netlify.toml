@@ -1,10 +1,18 @@
-# Ce fichier indique à Netlify comment construire et déployer le site.
+# Fichier de configuration principal pour Netlify
+
 [build]
-  # Aucune commande de build n'est nécessaire pour notre site statique.
-  command = "# no build command"
-  # Le dossier à publier est "public".
-  publish = "public/"
+  # Dossier contenant le site statique (HTML, CSS, JS client)
+  publish = "public"
+  # Dossier contenant nos fonctions serverless
+  functions = "netlify/functions"
 
 [functions]
-  # Nos fonctions serverless se trouveront dans ce dossier.
-  directory = "netlify/functions/"
+  # Assure que nos fonctions utilisent bien Node.js
+  node_bundler = "esbuild"
+
+[[edge_functions]]
+  # Chemin vers notre fonction "portier"
+  function = "auth-gate"
+  # URL sur laquelle cette fonction doit s'exécuter
+  path = "/"
+

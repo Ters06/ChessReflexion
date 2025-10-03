@@ -1,61 +1,44 @@
-// netlify/functions/check-auth.js
+// Cette fonction vérifie la validité du jeton de session de l'utilisateur.
 
-const { Pool } = require("@neondatabase/serverless");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 
 exports.handler = async function (event, context) {
-  // 1. Récupérer le cookie de la requête
+  // 1. Essayer de récupérer le cookie de session depuis les en-têtes de la requête.
   const cookies = event.headers.cookie
     ? cookie.parse(event.headers.cookie)
     : {};
-  const sessionToken = cookies.dojo_session;
+  const token = cookies.jwt_token;
 
-  if (!sessionToken) {
-    // Pas de token = non autorisé
+  // 2. Si aucun token n'est trouvé, l'utilisateur n'est pas connecté.
+  if (!token) {
     return {
-      statusCode: 401,
-      body: JSON.stringify({ message: "Non autorisé" }),
+      statusCode: 401, // 401 Unauthorized
+      body: JSON.stringify({ message: "Non authentifié." }),
     };
   }
 
   try {
-    // 2. Vérifier le JWT
-    const decodedToken = jwt.verify(sessionToken, process.env.JWT_SECRET);
-    const userId = decodedToken.userId;
+    // 3. Vérifier la validité du token avec notre secret.
+    // jwt.verify lèvera une erreur si le token est invalide ou a expiré.
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // 3. Récupérer les informations de l'utilisateur dans la base de données
-    const pool = new Pool({
-      connectionString: process.env.NETLIFY_DATABASE_URL,
-    });
-    const result = await pool.query(
-      "SELECT id, name, email FROM users WHERE id = $1",
-      [userId]
-    );
-    await pool.end();
-
-    if (result.rows.length === 0) {
-      // L'utilisateur n'existe pas dans la DB, le token est invalide
-      return {
-        statusCode: 401,
-        body: JSON.stringify({ message: "Utilisateur non trouvé" }),
-      };
-    }
-
-    const user = result.rows[0];
-
-    // 4. Renvoyer les informations de l'utilisateur (sans données sensibles)
+    // 4. Si le token est valide, renvoyer les informations de l'utilisateur.
+    // On ne renvoie que les informations non sensibles.
     return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: user.id, name: user.name, email: user.email }),
+      body: JSON.stringify({
+        id: decoded.id,
+        name: decoded.name,
+        email: decoded.email,
+      }),
     };
   } catch (error) {
-    console.error("Erreur de vérification du token:", error);
-    // Token invalide ou expiré
+    // 5. Si le token est invalide (falsifié, expiré, etc.), renvoyer une erreur.
+    console.error("Erreur de vérification du JWT:", error);
     return {
       statusCode: 401,
-      body: JSON.stringify({ message: "Session invalide ou expirée" }),
+      body: JSON.stringify({ message: "Token invalide ou expiré." }),
     };
   }
 };

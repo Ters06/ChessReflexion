@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Politique de sécurité du contenu (CSP) -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; 
+                   script-src 'self' https://cdn.tailwindcss.com; 
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+                   font-src 'self' https://fonts.gstatic.com;" />
+
+    <title>Dojo Mental - Mon Profil</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet" />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-900 text-white antialiased">
+    <div class="min-h-screen flex flex-col">
+      <header
+        class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+          <a
+            href="/app.html"
+            class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">
+            Dojo Mental
+          </a>
+          <div class="flex items-center gap-4">
+            <span id="user-name-header" class="text-slate-300"></span>
+            <a
+              href="/.netlify/functions/logout"
+              class="bg-red-500/20 text-red-300 font-semibold py-2 px-4 rounded-lg hover:bg-red-500/40 transition">
+              Déconnexion
+            </a>
+          </div>
+        </nav>
+      </header>
+
+      <main class="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="max-w-md mx-auto">
+          <h2 class="text-3xl font-bold text-slate-200 mb-8">Mon Profil</h2>
+
+          <div
+            class="bg-slate-800/50 p-6 rounded-lg border border-slate-700 space-y-4">
+            <div>
+              <label class="text-sm font-medium text-slate-400">Nom</label>
+              <p
+                id="user-name-profile"
+                class="text-lg font-semibold text-slate-200"></p>
+            </div>
+            <div>
+              <label class="text-sm font-medium text-slate-400">Email</label>
+              <p
+                id="user-email"
+                class="text-lg font-semibold text-slate-200"></p>
+            </div>
+          </div>
+
+          <div class="mt-12 border-t border-red-500/30 pt-8">
+            <h3 class="text-xl font-bold text-red-400">Zone de Danger</h3>
+            <p class="text-slate-400 mt-2">
+              Cette action est irréversible. Toutes vos données, y compris vos
+              parties et vos analyses, seront définitivement supprimées.
+            </p>
+            <button
+              id="delete-account-button"
+              class="mt-6 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition">
+              Supprimer mon compte
+            </button>
+          </div>
+        </div>
+      </main>
+
+      <footer id="footer-container" class="w-full p-4">
+        <!-- Le footer sera injecté ici par main.js -->
+      </footer>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/app.js"></script>
+    <!-- Script principal pour la vérification d'authentification -->
+    <script>
+      // Logique spécifique à la page de profil
+      document.addEventListener("DOMContentLoaded", () => {
+        // Le script app.js aura déjà vérifié l'authentification et stocké les infos utilisateur
+        // On se contente de les afficher.
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        if (userData) {
+          document.getElementById("user-name-header").textContent =
+            userData.name;
+          document.getElementById("user-name-profile").textContent =
+            userData.name;
+          document.getElementById("user-email").textContent = userData.email;
+        }
+
+        document
+          .getElementById("delete-account-button")
+          .addEventListener("click", async () => {
+            const confirmation = prompt(
+              "Êtes-vous absolument sûr ? Cette action est irréversible. Tapez 'SUPPRIMER' pour confirmer."
+            );
+            if (confirmation === "SUPPRIMER") {
+              try {
+                const response = await fetch(
+                  "/.netlify/functions/delete-user",
+                  {
+                    method: "POST",
+                    headers: {
+                      Authorization: `Bearer ${localStorage.getItem(
+                        "jwt_token"
+                      )}`,
+                    },
+                  }
+                );
+
+                if (response.ok) {
+                  alert("Votre compte a été supprimé avec succès.");
+                  localStorage.removeItem("jwt_token");
+                  localStorage.removeItem("userData");
+                  window.location.href = "/";
+                } else {
+                  const error = await response.json();
+                  throw new Error(
+                    error.message || "Erreur lors de la suppression du compte."
+                  );
+                }
+              } catch (error) {
+                alert(`Erreur: ${error.message}`);
+              }
+            } else {
+              alert("Suppression annulée.");
+            }
+          });
+      });
+    </script>
+  </body>
+</html>

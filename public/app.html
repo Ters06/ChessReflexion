@@ -3,18 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Politique de sécurité du contenu (CSP) -->
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; 
                    script-src 'self' https://cdn.tailwindcss.com; 
                    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
-                   font-src 'self' https://fonts.gstatic.com; 
-                   connect-src 'self';" />
-    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
+                   font-src 'self' https://fonts.gstatic.com;" />
 
-    <title>Dojo Mental - Mon Tableau de Bord</title>
+    <title>Dojo Mental - Tableau de Bord</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,55 +23,58 @@
     <style>
       body {
         font-family: "Inter", sans-serif;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-      #app-content {
-        display: none;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
       }
     </style>
   </head>
   <body class="bg-slate-900 text-white antialiased">
-    <div id="loader" class="min-h-screen flex items-center justify-center">
-      <p class="text-slate-400">Vérification de la session...</p>
-    </div>
-
-    <div id="app-content" class="min-h-screen flex flex-col p-4 sm:p-6 md:p-8">
+    <div class="min-h-screen flex flex-col">
       <header
-        class="flex flex-wrap gap-4 justify-between items-center mb-8 sm:mb-12">
-        <div>
-          <h1 class="text-2xl font-bold text-cyan-400">Dojo Mental</h1>
-          <p id="welcome-message" class="text-slate-400"></p>
-        </div>
-        <button
-          id="logout-btn"
-          class="bg-red-900/50 text-red-300 font-semibold py-2 px-4 rounded-lg hover:bg-red-900/80 transition">
-          Déconnexion
-        </button>
+        class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+          <h1
+            class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">
+            Dojo Mental
+          </h1>
+          <div class="flex items-center gap-4">
+            <span id="user-name" class="text-slate-300"></span>
+            <a
+              href="/.netlify/functions/logout"
+              id="logout-button"
+              class="bg-red-500/20 text-red-300 font-semibold py-2 px-4 rounded-lg hover:bg-red-500/40 transition">
+              Déconnexion
+            </a>
+          </div>
+        </nav>
       </header>
 
-      <main class="flex-grow w-full max-w-5xl mx-auto">
-        <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+      <main class="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="flex justify-between items-center mb-8">
           <h2 class="text-3xl font-bold text-slate-200">Mes Parties</h2>
           <button
-            id="new-game-btn"
-            class="bg-violet-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-violet-700 transition-transform hover:scale-105">
+            id="new-game-button"
+            class="bg-violet-500 hover:bg-violet-600 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105">
             + Nouvelle Partie
           </button>
         </div>
 
-        <div
-          id="games-list-container"
-          class="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700 p-6">
-          <!-- La liste des parties sera injectée ici par JavaScript -->
+        <!-- La liste des parties sera injectée ici par dashboard.js -->
+        <div id="games-list" class="space-y-4">
+          <!-- Exemple de rendu d'une partie (sera généré dynamiquement) -->
+          <!-- 
+                <div class="bg-slate-800/50 p-4 rounded-lg flex justify-between items-center border border-slate-700 hover:border-cyan-500/50">
+                    <div>
+                        <p class="font-bold text-slate-300">Partie du 03/10/2025</p>
+                        <p class="text-sm text-slate-400">Statut: En cours (Trait aux Blancs)</p>
+                    </div>
+                    <a href="#" class="text-cyan-400 font-semibold hover:text-cyan-300">Reprendre →</a>
+                </div>
+                -->
         </div>
       </main>
 
-      <div id="footer-placeholder" class="w-full max-w-5xl mx-auto"></div>
+      <footer id="footer-container" class="w-full p-4">
+        <!-- Le footer sera injecté ici par main.js -->
+      </footer>
     </div>
 
     <script src="/js/main.js"></script>

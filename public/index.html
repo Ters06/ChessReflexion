@@ -3,18 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Politique de sécurité du contenu (CSP) -->
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; 
-                   script-src 'self' https://cdn.tailwindcss.com; 
+                   script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; 
                    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
-                   font-src 'self' https://fonts.gstatic.com; 
+                   font-src 'self' https://fonts.gstatic.com;
                    connect-src 'self' https://accounts.google.com;" />
-    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
 
-    <title>Dojo Mental</title>
+    <title>Dojo Mental - Connexion</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,57 +24,56 @@
     <style>
       body {
         font-family: "Inter", sans-serif;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-      .main-content {
-        flex-grow: 1;
       }
     </style>
   </head>
   <body class="bg-slate-900 text-white antialiased">
-    <main class="main-content flex flex-col items-center justify-center p-4">
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
       <div
         class="absolute inset-0 bg-grid-slate-700/20 [mask-image:linear-gradient(to_bottom,white_20%,transparent_100%)]"></div>
-      <header class="text-center mb-12 z-10">
+
+      <main class="text-center z-10">
         <h1
           class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">
           Dojo Mental
         </h1>
         <p class="text-slate-400 mt-4 max-w-2xl mx-auto">
-          Un outil pour structurer votre pensée et progresser aux échecs.
+          Votre partenaire d'entraînement pour forger une méthode de réflexion
+          d'expert aux échecs.
         </p>
-      </header>
-      <div class="z-10">
-        <a
-          href="/.netlify/functions/auth-google"
-          class="bg-slate-800/50 backdrop-blur-sm rounded-xl p-4 border border-slate-700 text-center hover:border-violet-500/50 transition-colors duration-300 transform hover:-translate-y-1 flex items-center justify-center">
-          <svg
-            class="w-6 h-6 mr-3"
-            viewBox="0 0 48 48"
-            xmlns="http://www.w3.org/2000/svg">
-            <path
-              fill="#FFC107"
-              d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
-            <path
-              fill="#FF3D00"
-              d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
-            <path
-              fill="#4CAF50"
-              d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
-            <path
-              fill="#1976D2"
-              d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C39.99,36.65,44,31.13,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
-          </svg>
-          <span class="text-lg font-semibold text-slate-200"
-            >Se connecter avec Google</span
-          >
-        </a>
-      </div>
-    </main>
+        <div class="mt-12">
+          <a
+            href="/.netlify/functions/auth-google"
+            id="login-button"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg inline-flex items-center transition-transform transform hover:scale-105">
+            <svg
+              class="w-6 h-6 mr-3"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 48 48"
+              width="48px"
+              height="48px">
+              <path
+                fill="#FFC107"
+                d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+              <path
+                fill="#FF3D00"
+                d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+              <path
+                fill="#4CAF50"
+                d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+              <path
+                fill="#1976D2"
+                d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C44.598,32.45,48,25.961,48,20C48,17.341,47.862,14.65,47.611,12.083z" />
+            </svg>
+            Se connecter avec Google
+          </a>
+        </div>
+      </main>
 
-    <div id="footer-placeholder"></div>
+      <footer id="footer-container" class="absolute bottom-0 w-full p-4">
+        <!-- Le footer sera injecté ici par main.js -->
+      </footer>
+    </div>
 
     <script src="/js/main.js"></script>
     <script src="/js/auth.js"></script>

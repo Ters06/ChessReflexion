@@ -1,0 +1,9 @@
+/* Bien que nous utilisions principalement Tailwind CSS,
+  ce fichier peut être utilisé pour des styles personnalisés plus complexes.
+*/
+
+body {
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

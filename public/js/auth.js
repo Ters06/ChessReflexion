@@ -1,21 +1,14 @@
-// Ce script gère la redirection vers Google pour l'authentification.
+// Ce script est chargé sur la page d'accueil (index.html).
+// Son rôle est de vérifier si l'utilisateur est déjà connecté.
 
-// Attend que la page soit entièrement chargée.
 document.addEventListener("DOMContentLoaded", () => {
-  // Trouve le bouton de connexion par son ID.
-  const loginButton = document.getElementById("login-btn");
+  // On vérifie si un jeton de session est présent dans le stockage local du navigateur.
+  const token = localStorage.getItem("jwt_token");
 
-  // Vérifie si le bouton existe pour éviter les erreurs.
-  if (loginButton) {
-    // Ajoute un écouteur d'événement pour le clic.
-    loginButton.addEventListener("click", () => {
-      // Affiche un message dans la console pour le débogage.
-      console.log("Tentative de connexion avec Google...");
-
-      // Redirige l'utilisateur vers le point d'entrée de notre fonction serverless d'authentification.
-      // Cette fonction se chargera de la communication avec Google.
-      // C'est plus sécurisé que de le faire directement depuis le client.
-      window.location.href = "/.netlify/functions/auth-google";
-    });
+  // Si un jeton existe, cela signifie que l'utilisateur est probablement déjà connecté.
+  // On le redirige alors directement vers son tableau de bord pour lui éviter de revoir la page de connexion.
+  // La vérification finale de la validité du jeton sera faite par app.js sur la page du tableau de bord.
+  if (token) {
+    window.location.href = "/app.html";
   }
 });

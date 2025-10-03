@@ -1,29 +1,34 @@
-// netlify/functions/auth-callback.js
+// Cette fonction est le cœur de notre authentification.
+// Elle est appelée par Google après que l'utilisateur a donné son consentement.
 
 const { OAuth2Client } = require("google-auth-library");
-const { Pool } = require("@neondatabase/serverless");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
+const { Pool } = require("@neondatabase/serverless");
 
 exports.handler = async function (event, context) {
-  // 1. Extraire le code d'autorisation de l'URL
-  const code = event.queryStringParameters.code;
+  // 1. Extraire le code d'autorisation de Google depuis l'URL
+  const { code } = event.queryStringParameters;
 
-  // 2. Préparer les secrets et la configuration
+  if (!code) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Code d'autorisation manquant." }),
+    };
+  }
+
   const clientID = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const jwtSecret = process.env.JWT_SECRET;
-  const siteURL = process.env.URL || "http://localhost:8888";
-  const redirectURL = `${siteURL}/.netlify/functions/auth-callback`;
+  const redirectURL = `${process.env.URL}/.netlify/functions/auth-callback`;
+
+  const oauth2Client = new OAuth2Client(clientID, clientSecret, redirectURL);
 
   try {
-    const oauth2Client = new OAuth2Client(clientID, clientSecret, redirectURL);
-
-    // 3. Échanger le code contre des tokens
+    // 2. Échanger le code contre des tokens d'accès
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
 
-    // 4. Obtenir les informations du profil utilisateur depuis Google
+    // 3. Utiliser les tokens pour récupérer les informations de l'utilisateur
     const ticket = await oauth2Client.verifyIdToken({
       idToken: tokens.id_token,
       audience: clientID,
@@ -34,59 +39,56 @@ exports.handler = async function (event, context) {
     const email = payload["email"];
     const name = payload["name"];
 
-    // 5. Se connecter à la base de données Neon
+    // 4. Se connecter à la base de données Neon
     const pool = new Pool({
       connectionString: process.env.NETLIFY_DATABASE_URL,
     });
 
-    // 6. Vérifier si l'utilisateur existe, sinon le créer (UPSERT)
-    // ON CONFLICT (google_id) DO UPDATE... est une manière sécurisée de gérer cela.
-    // Si un utilisateur avec ce google_id existe déjà, on met juste à jour son nom.
-    // Sinon, on l'insère. RETURNING id nous renvoie son ID dans tous les cas.
-    const userResult = await pool.query(
-      `INSERT INTO users (google_id, email, name) 
-             VALUES ($1, $2, $3) 
-             ON CONFLICT (google_id) 
-             DO UPDATE SET name = $3, email = $2
-             RETURNING id`,
-      [googleId, email, name]
-    );
+    // 5. Vérifier si l'utilisateur existe, sinon le créer (UPSERT)
+    const userQuery = `
+            INSERT INTO users (google_id, email, name)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (google_id) 
+            DO UPDATE SET email = EXCLUDED.email, name = EXCLUDED.name
+            RETURNING id, name, email;
+        `;
 
-    const userId = userResult.rows[0].id;
+    const { rows } = await pool.query(userQuery, [googleId, email, name]);
+    const user = rows[0];
+
     await pool.end(); // Fermer la connexion à la DB
 
-    // 7. Créer notre propre jeton de session (JWT)
-    const sessionToken = jwt.sign({ userId: userId }, jwtSecret, {
-      expiresIn: "7d",
-    });
+    // 6. Créer un jeton de session (JWT)
+    const jwtToken = jwt.sign(
+      { id: user.id, name: user.name, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" } // Le token expirera dans 7 jours
+    );
 
-    // 8. Créer un cookie sécurisé
-    const sessionCookie = cookie.serialize("dojo_session", sessionToken, {
+    // 7. Placer le jeton dans un cookie sécurisé
+    const sessionCookie = cookie.serialize("jwt_token", jwtToken, {
       httpOnly: true, // Le cookie n'est pas accessible par JavaScript côté client (sécurité XSS)
-      secure: process.env.CONTEXT === "production", // Mettre 'secure' uniquement en production (HTTPS)
+      secure: true, // Le cookie ne sera envoyé que sur une connexion HTTPS
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 jours
-      sameSite: "Lax", // Protection contre les attaques CSRF
+      maxAge: 60 * 60 * 24 * 7, // 7 jours en secondes
+      sameSite: "Lax", // Protection CSRF
     });
 
-    // 9. Rediriger l'utilisateur vers la page principale de l'application avec le cookie de session
+    // 8. Rediriger l'utilisateur vers le tableau de bord
     return {
       statusCode: 302,
       headers: {
-        Location: "/app.html", // La page où l'utilisateur atterrira après la connexion
         "Set-Cookie": sessionCookie,
-        "Cache-Control": "no-cache",
+        Location: "/app.html",
       },
-      body: "",
     };
   } catch (error) {
-    console.error("Erreur lors de l'authentification:", error);
-    // Rediriger vers une page d'erreur si quelque chose se passe mal
+    console.error("Erreur d'authentification:", error);
     return {
-      statusCode: 302,
-      headers: {
-        Location: "/?error=auth_failed",
-      },
+      statusCode: 500,
+      body: JSON.stringify({
+        message: "Une erreur est survenue lors de l'authentification.",
+      }),
     };
   }
 };

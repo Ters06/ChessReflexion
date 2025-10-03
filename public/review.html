@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Politique de sécurité du contenu (CSP) -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; 
+                   script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; 
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+                   font-src 'self' https://fonts.gstatic.com;" />
+
+    <title>Dojo Mental - Analyse de Partie</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet" />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .modal-overlay {
+        transition: opacity 0.3s ease;
+      }
+      .modal-content {
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal-hidden {
+        pointer-events: none;
+      }
+      .modal-hidden .modal-overlay {
+        opacity: 0;
+      }
+      .modal-hidden .modal-content {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+      }
+
+      .static-board {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        border: 2px solid #334155;
+      }
+      .square {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(20px, 8vw, 48px);
+      }
+      .light {
+        background-color: #f1f5f9;
+      }
+      .dark {
+        background-color: #64748b;
+      }
+      .piece-white {
+        color: #ffffff;
+        text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+      }
+      .piece-black {
+        color: #000000;
+      }
+
+      .piece-btn.active {
+        background-color: #475569;
+        border-color: #5eead4;
+      }
+      .tab-button.active {
+        border-bottom-color: #22d3ee;
+        color: #e2e8f0;
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-900 text-white antialiased">
+    <div class="min-h-screen flex flex-col">
+      <header
+        class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 sticky top-0 z-20">
+        <nav class="container mx-auto flex justify-between items-center">
+          <a
+            href="/app.html"
+            class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">
+            Dojo Mental
+          </a>
+          <div class="flex items-center gap-4">
+            <span id="user-name" class="text-slate-300"></span>
+            <a
+              href="/.netlify/functions/logout"
+              id="logout-button"
+              class="bg-red-500/20 text-red-300 font-semibold py-2 px-4 rounded-lg hover:bg-red-500/40 transition">
+              Déconnexion
+            </a>
+          </div>
+        </nav>
+      </header>
+
+      <main
+        id="game-view"
+        class="w-full container mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-8 flex-grow">
+        <!-- Left Column: Board and Info -->
+        <div class="w-full lg:w-2/3 flex-shrink-0">
+          <div
+            id="board"
+            class="static-board shadow-2xl mx-auto max-w-[70vh]"></div>
+          <div
+            id="game-status"
+            class="text-center mt-4 font-semibold text-lg text-slate-300">
+            Chargement...
+          </div>
+          <div class="flex justify-center items-center gap-4 mt-4">
+            <button
+              id="nav-start"
+              class="p-2 bg-slate-700 rounded-md hover:bg-slate-600">
+              «
+            </button>
+            <button
+              id="nav-prev"
+              class="p-2 bg-slate-700 rounded-md hover:bg-slate-600">
+              ‹
+            </button>
+            <span id="move-counter" class="text-slate-400 font-mono"
+              >Coup 0 / 0</span
+            >
+            <button
+              id="nav-next"
+              class="p-2 bg-slate-700 rounded-md hover:bg-slate-600">
+              ›
+            </button>
+            <button
+              id="nav-end"
+              class="p-2 bg-slate-700 rounded-md hover:bg-slate-600">
+              »
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Column: Dojo and Game Data -->
+        <div
+          class="w-full lg:w-1/3 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700 p-6 flex flex-col">
+          <h2 class="text-2xl font-bold text-cyan-400 mb-4">
+            Workflow de Réflexion
+          </h2>
+          <div id="dojo-controls-container" class="mb-6">
+            <!-- Dojo controls will be dynamically shown/hidden here -->
+          </div>
+
+          <div id="move-input-area">
+            <!-- Move input will be dynamically shown/hidden here -->
+          </div>
+
+          <h3
+            class="text-xl font-bold text-slate-300 mb-2 border-t border-slate-700 pt-4">
+            Notation (PGN)
+          </h3>
+          <div
+            id="pgn"
+            class="w-full flex-grow bg-slate-900/50 border border-slate-700 rounded-lg p-3 text-sm text-slate-400 font-mono overflow-y-auto h-32"></div>
+
+          <div class="grid grid-cols-2 gap-4 mt-6">
+            <button
+              onclick="openModal('modal-export')"
+              class="bg-slate-700 text-slate-300 font-semibold py-2 px-4 rounded-lg hover:bg-slate-600 transition">
+              Exporter
+            </button>
+            <div id="game-actions" class="grid grid-cols-2 gap-2">
+              <!-- Buttons for resign/draw will be here -->
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer id="footer-container" class="w-full p-4">
+        <!-- Le footer sera injecté ici par main.js -->
+      </footer>
+    </div>
+
+    <!-- MODALES CONTAINER -->
+    <div id="modal-container"></div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/app.js"></script>
+    <!-- For auth check -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.min.js"></script>
+    <script src="/js/review.js"></script>
+  </body>
+</html>
